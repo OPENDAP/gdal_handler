@@ -154,7 +154,7 @@ GDALGrid::read(const string &dataset)
 
     padfMap = (double *) CPLMalloc(sizeof(double) * nBufYSize);
 
-    for( i = 0, iPixel = start; iPixel <= stop; iPixel += stride )
+    for( i = 0, iLine = start; iLine <= stop; iLine += stride )
     {
         padfMap[i++] = adfGeoTransform[3] + adfGeoTransform[5] * iLine;
     }
@@ -172,7 +172,7 @@ GDALGrid::read(const string &dataset)
 
     padfMap = (double *) CPLMalloc(sizeof(double) * nBufXSize);
 
-    for( i = 0, iLine = start_2; iLine <= stop_2; iLine += stride_2 )
+    for( i = 0, iPixel = start_2; iPixel <= stop_2; iPixel += stride_2 )
     {
         padfMap[i++] = adfGeoTransform[0] + iPixel * adfGeoTransform[1];
     }
