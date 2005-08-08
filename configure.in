@@ -1,7 +1,7 @@
 dnl -*- m4 -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.1 2004/10/19 20:39:37 warmerda Exp $)
+AC_REVISION($Id$)
 AC_INIT(lgdal.h)
 
 dnl Note that multiple calls to AC_CONFIG_HEADER don't work in autoconf 2.13. 
