@@ -33,10 +33,12 @@
 
 #include "GDALTypes.h"
 
-static void read_descriptors(DDS &dds, const string &filename)
-throw  (Error);
-extern void read_variables(DAS &dds, const string &filename)
-throw  (Error);
+void gdal_read_dataset_variables(DDS &dds, const string &filename);
+extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
+
+#if 0
+
+// Noise from the old days... jhrg 1/12/12
 
 const string cgi_version = "gdal-dods/3.4.8"; /* ?? */
 
@@ -131,13 +133,13 @@ main(int argc, char *argv[])
 
     return 0;
 }
+#endif
 
 /************************************************************************/
 /*                          read_descriptors()                          */
 /************************************************************************/
 
-static void read_descriptors(DDS &dds, const string &filename) throw  (Error)
-
+void gdal_read_dataset_variables(DDS &dds, const string &filename)
 {
     GDALDatasetH hDS;
 

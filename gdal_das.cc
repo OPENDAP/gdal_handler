@@ -32,7 +32,7 @@
 
 #include "GDALTypes.h"
 
-void read_variables(DAS &das, const string &filename) throw  (Error);
+void gdal_read_dataset_attributes(DAS &das, const string &filename);
 static void translate_metadata( char **md, AttrTable *parent_table );
 static void attach_str_attr_item( AttrTable *parent_table, 
                                   const char *pszKey, const char *pszValue );
@@ -41,8 +41,7 @@ static void attach_str_attr_item( AttrTable *parent_table,
 /*                           read_variables()                           */
 /************************************************************************/
 
-void read_variables( DAS &das, const string &filename) throw (Error)
-
+void gdal_read_dataset_attributes( DAS &das, const string &filename)
 {
 /* -------------------------------------------------------------------- */
 /*      Open the dataset.                                               */
