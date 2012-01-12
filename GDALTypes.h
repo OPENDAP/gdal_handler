@@ -22,16 +22,17 @@
 #ifndef _GDALTypes_h
 #define _GDALTypes_h 1
 
-#include "Byte.h"
-#include "UInt16.h"
-#include "Int16.h"
-#include "UInt32.h"
-#include "Int32.h"
-#include "Float32.h"
-#include "Float64.h"
-#include "Array.h"
-#include "Grid.h"
-#include "gdal.h"
+#include <gdal.h>
+
+#include <Byte.h>
+#include <UInt16.h>
+#include <Int16.h>
+#include <UInt32.h>
+#include <Int32.h>
+#include <Float32.h>
+#include <Float64.h>
+#include <Array.h>
+#include <Grid.h>
 
 using namespace libdap ;
 

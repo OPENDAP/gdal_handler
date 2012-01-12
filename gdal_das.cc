@@ -1,22 +1,17 @@
 #include <iostream>
 #include <string>
 
-#include "DDS.h"
-#include "cgi_util.h"
-#include "DODSFilter.h"
-#include "gdal.h"
-#include "cpl_string.h"
+#include <gdal.h>
+#include <cpl_string.h>
+
+#include <DAS.h>
 
 #include "GDALTypes.h"
 
-void read_variables(DAS &dds, const string &filename)
-throw  (Error);
+void read_variables(DAS &das, const string &filename) throw  (Error);
 static void translate_metadata( char **md, AttrTable *parent_table );
 static void attach_str_attr_item( AttrTable *parent_table, 
                                   const char *pszKey, const char *pszValue );
-                              
-
-
 
 /************************************************************************/
 /*                           read_variables()                           */

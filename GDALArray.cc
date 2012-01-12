@@ -19,9 +19,11 @@
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
-#include "GDALTypes.h"
 #include <string>
-#include "InternalErr.h"
+
+#include <InternalErr.h>
+
+#include "GDALTypes.h"
 
 using namespace libdap ;
 

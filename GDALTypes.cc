@@ -23,9 +23,11 @@
 #pragma implementation
 #endif
 
-#include "GDALTypes.h"
 #include <string>
-#include "InternalErr.h"
+
+#include <InternalErr.h>
+
+#include "GDALTypes.h"
 
 using namespace libdap ;
 
