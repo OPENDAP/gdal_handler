@@ -1,10 +1,10 @@
 #include <iostream>
 #include <string>
 
-#include "DDS.h"
-#include "cgi_util.h"
-#include "DODSFilter.h"
-#include "gdal.h"
+#include <gdal.h>
+
+#include <DDS.h>
+#include <REsponseBuilder.h>
 
 #include "GDALTypes.h"
 
