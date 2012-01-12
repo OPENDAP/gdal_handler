@@ -23,6 +23,7 @@ AC_SUBST(PACKAGE_SUBMINOR_VERSION)
 
 AC_CONFIG_SRCDIR([GDALTypes.h])
 AC_CONFIG_HEADER([config.h])
+
 # AC_CONFIG_TESTDIR(tests, [.])
 
 # Checks for programs.
@@ -50,8 +51,6 @@ AC_CHECK_FUNCS([strchr isdigit])
 dnl Checks for specific libraries
 AC_CHECK_LIBDAP([3.11.0],
  [
-dnl  LIBS="$LIBS $DAP_LIBS"
-dnl  CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
  ],
  [ AC_MSG_ERROR([Cannot find expected version of libdap])
 ])
