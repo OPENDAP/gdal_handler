@@ -1,0 +1,314 @@
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of gdal_handler, a data handler for the OPeNDAP data
+// server.
+
+// This file is part of the GDAL OPeNDAP Adapter
+
+// Copyright (c) 2004 OPeNDAP, Inc.
+// Author: Frank Warmerdam <warmerdam@pobox.com>
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+
+
+// GDALRequestHandler.cc
+
+#include "config.h"
+
+#include <string>
+#include <sstream>
+
+#include "GDALRequestHandler.h"
+
+#include <BESResponseHandler.h>
+#include <BESResponseNames.h>
+#include <BESDapNames.h>
+#include <BESDASResponse.h>
+#include <BESDDSResponse.h>
+#include <BESDataDDSResponse.h>
+#include <BESVersionInfo.h>
+#include <InternalErr.h>
+#include <BESDapError.h>
+#include <BESInternalFatalError.h>
+#include <BESDataNames.h>
+#include <TheBESKeys.h>
+#include <BESUtil.h>
+#include <Ancillary.h>
+#include <BESServiceRegistry.h>
+#include <BESUtil.h>
+#include <BESContextManager.h>
+
+#define GDAL_NAME "gdal"
+
+using namespace libdap;
+
+bool GDALRequestHandler::_show_shared_dims = false;
+bool GDALRequestHandler::_show_shared_dims_set = false;
+bool GDALRequestHandler::_ignore_unknown_types = false;
+bool GDALRequestHandler::_ignore_unknown_types_set = false;
+
+extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
+extern void gdal_read_dataset_variables(DDS & dds, const string & filename);
+
+/** Is the version number string greater than or equal to the value.
+ * @note Works only for versions with zero or one dot. If the conversion of
+ * the string to a float fails for any reason, this returns false.
+ * @param version The string value (e.g., 3.2)
+ * @param value A floating point value.
+ */
+static bool version_ge(const string &version, float value)
+{
+    try {
+        float v;
+        istringstream iss(version);
+        iss >> v;
+        //cerr << "version: " << v << ", value: " << value << endl;
+        return (v >= value);
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+GDALRequestHandler::GDALRequestHandler(const string &name) :
+    BESRequestHandler(name)
+{
+    add_handler(DAS_RESPONSE, GDALRequestHandler::gdal_build_das);
+    add_handler(DDS_RESPONSE, GDALRequestHandler::gdal_build_dds);
+    add_handler(DATA_RESPONSE, GDALRequestHandler::gdal_build_data);
+    add_handler(HELP_RESPONSE, GDALRequestHandler::gdal_build_help);
+    add_handler(VERS_RESPONSE, GDALRequestHandler::gdal_build_version);
+
+    if (GDALRequestHandler::_show_shared_dims_set == false) {
+        bool key_found = false, context_found = false;
+        // string key = "GDAL.ShowSharedDimensions";
+        string doset;
+        TheBESKeys::TheKeys()->get_value("GDAL.ShowSharedDimensions", doset, key_found);
+        // TODO Fix this so it works
+        string context_value = BESContextManager::TheManager()->get_context("xdap_accept", context_found);
+        //cerr << "context value: " << context_value << endl;
+        //cerr << "Testing values..." << endl;
+        if (key_found) {
+            //cerr << " Key found" << endl;
+            doset = BESUtil::lowercase(doset);
+            if (doset == "true" || doset == "yes") {
+                GDALRequestHandler::_show_shared_dims = true;
+            }
+        }
+        else if (context_found) {
+            //cerr << "context found" << endl;
+            if (version_ge(context_value, 3.2))
+                GDALRequestHandler::_show_shared_dims = false;
+            else
+                GDALRequestHandler::_show_shared_dims = true;
+        }
+        else {
+            //cerr << "Set default value" << endl;
+            GDALRequestHandler::_show_shared_dims = true;
+        }
+
+        GDALRequestHandler::_show_shared_dims_set = true;
+    }
+
+    if (GDALRequestHandler::_ignore_unknown_types_set == false) {
+        bool key_found = false;
+        string doset;
+        TheBESKeys::TheKeys()->get_value("GDAL.IgnoreUnknownTypes", doset, key_found);
+        if (key_found) {
+            doset = BESUtil::lowercase(doset);
+            if (doset == "true" || doset == "yes")
+                GDALRequestHandler::_ignore_unknown_types = true;
+            else
+                GDALRequestHandler::_ignore_unknown_types = false;
+        }
+        else {
+            // if the key is not found, set the default value
+            GDALRequestHandler::_ignore_unknown_types = false;
+        }
+
+        GDALRequestHandler::_ignore_unknown_types_set = true;
+    }
+}
+
+GDALRequestHandler::~GDALRequestHandler()
+{
+}
+
+bool GDALRequestHandler::gdal_build_das(BESDataHandlerInterface & dhi)
+{
+    BESResponseObject *response = dhi.response_handler->get_response_object();
+    BESDASResponse *bdas = dynamic_cast<BESDASResponse *> (response);
+    if (!bdas)
+        throw BESInternalError("cast error", __FILE__, __LINE__);
+    try {
+        bdas->set_container(dhi.container->get_symbolic_name());
+        DAS *das = bdas->get_das();
+        string accessed = dhi.container->access();
+        gdal_read_dataset_attributes(*das, accessed);
+        Ancillary::read_ancillary_das(*das, accessed);
+        bdas->clear_container();
+    }
+    catch (BESError &e) {
+        throw;
+    }
+    catch (InternalErr & e) {
+        BESDapError ex(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+        throw ex;
+    }
+    catch (Error & e) {
+        BESDapError ex(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+        throw ex;
+    }
+    catch (...) {
+        string s = "unknown exception caught building DAS";
+        BESInternalFatalError ex(s, __FILE__, __LINE__);
+        throw ex;
+    }
+
+    return true;
+}
+
+bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
+{
+    BESResponseObject *response = dhi.response_handler->get_response_object();
+    BESDDSResponse *bdds = dynamic_cast<BESDDSResponse *> (response);
+    if (!bdds)
+        throw BESInternalError("cast error", __FILE__, __LINE__);
+    try {
+        bdds->set_container(dhi.container->get_symbolic_name());
+        DDS *dds = bdds->get_dds();
+        string accessed = dhi.container->access();
+        dds->filename(accessed);
+
+        gdal_read_dataset_variables(*dds, accessed);
+
+        Ancillary::read_ancillary_dds(*dds, accessed);
+
+        DAS *das = new DAS;
+        BESDASResponse bdas(das);
+        bdas.set_container(dhi.container->get_symbolic_name());
+        gdal_read_dataset_attributes(*das, accessed);
+        Ancillary::read_ancillary_das(*das, accessed);
+
+        dds->transfer_attributes(das);
+
+        bdds->set_constraint(dhi);
+
+        bdds->clear_container();
+    }
+    catch (BESError &e) {
+        throw;
+    }
+    catch (InternalErr & e) {
+        BESDapError ex(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+        throw ex;
+    }
+    catch (Error & e) {
+        BESDapError ex(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+        throw ex;
+    }
+    catch (...) {
+        string s = "unknown exception caught building DDS";
+        BESInternalFatalError ex(s, __FILE__, __LINE__);
+        throw ex;
+    }
+
+    return true;
+}
+
+bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
+{
+    BESResponseObject *response = dhi.response_handler->get_response_object();
+    BESDataDDSResponse *bdds = dynamic_cast<BESDataDDSResponse *> (response);
+    if (!bdds)
+        throw BESInternalError("cast error", __FILE__, __LINE__);
+
+    try {
+        bdds->set_container(dhi.container->get_symbolic_name());
+        DataDDS *dds = bdds->get_dds();
+        string accessed = dhi.container->access();
+        dds->filename(accessed);
+
+        gdal_read_dataset_variables(*dds, accessed);
+
+        Ancillary::read_ancillary_dds(*dds, accessed);
+
+        DAS *das = new DAS;
+        BESDASResponse bdas(das);
+        bdas.set_container(dhi.container->get_symbolic_name());
+        gdal_read_dataset_attributes(*das, accessed);
+        Ancillary::read_ancillary_das(*das, accessed);
+
+        dds->transfer_attributes(das);
+
+        bdds->set_constraint(dhi);
+
+        bdds->clear_container();
+    }
+    catch (BESError &e) {
+        throw;
+    }
+    catch (InternalErr & e) {
+        BESDapError ex(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+        throw ex;
+    }
+    catch (Error & e) {
+        BESDapError ex(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+        throw ex;
+    }
+    catch (...) {
+        string s = "unknown exception caught building DAS";
+        BESInternalFatalError ex(s, __FILE__, __LINE__);
+        throw ex;
+    }
+
+    return true;
+}
+
+bool GDALRequestHandler::gdal_build_help(BESDataHandlerInterface & dhi)
+{
+    BESResponseObject *response = dhi.response_handler->get_response_object();
+    BESInfo *info = dynamic_cast<BESInfo *> (response);
+    if (!info)
+        throw BESInternalError("cast error", __FILE__, __LINE__);
+
+    map < string, string > attrs;
+    attrs["name"] = PACKAGE_NAME;
+    attrs["version"] = PACKAGE_VERSION;
+    list < string > services;
+    BESServiceRegistry::TheRegistry()->services_handled(GDAL_NAME, services);
+    if (services.size() > 0) {
+        string handles = BESUtil::implode(services, ',');
+        attrs["handles"] = handles;
+    }
+    info->begin_tag("module", &attrs);
+    info->end_tag("module");
+
+    return true;
+}
+
+bool GDALRequestHandler::gdal_build_version(BESDataHandlerInterface & dhi)
+{
+    BESResponseObject *response = dhi.response_handler->get_response_object();
+    BESVersionInfo *info = dynamic_cast<BESVersionInfo *> (response);
+    if (!info)
+        throw BESInternalError("cast error", __FILE__, __LINE__);
+
+    info->add_module(PACKAGE_NAME, PACKAGE_VERSION);
+
+    return true;
+}
