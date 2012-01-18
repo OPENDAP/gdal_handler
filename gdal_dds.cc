@@ -142,9 +142,10 @@ main(int argc, char *argv[])
 void gdal_read_dataset_variables(DDS &dds, const string &filename)
 {
     GDALDatasetH hDS;
-
+#if 0
+    // Old? From teh Server3 days? jhrg 1/12/12
     dds.set_dataset_name( name_path( filename ) );
-
+#endif
 /* -------------------------------------------------------------------- */
 /*      Open the dataset.                                               */
 /* -------------------------------------------------------------------- */

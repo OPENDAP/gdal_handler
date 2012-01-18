@@ -24,7 +24,7 @@ AC_SUBST(PACKAGE_SUBMINOR_VERSION)
 AC_CONFIG_SRCDIR([GDALTypes.h])
 AC_CONFIG_HEADER([config.h])
 
-# AC_CONFIG_TESTDIR(tests, [.])
+AC_CONFIG_TESTDIR(tests, [.])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -94,6 +94,6 @@ fi
 OPENDAP_DEBUG_OPTION
 
 # When we have tests, add these: tests/Makefile tests/atlocal
-AC_CONFIG_FILES([Makefile ])
+AC_CONFIG_FILES([Makefile tests/Makefile tests/atlocal tests/package.m4])
 AC_OUTPUT
 

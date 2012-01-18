@@ -11,8 +11,7 @@ ACLOCAL_AMFLAGS = -I conf
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libgdal_handler.la
 
-# No tests yet
-# SUBDIRS = . tests
+SUBDIRS = . tests
 
 GDAL_SRCS = GDALArray.cc GDALGrid.cc GDALTypes.cc gdal_das.cc gdal_dds.cc
 
