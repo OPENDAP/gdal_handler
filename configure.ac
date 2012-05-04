@@ -79,7 +79,7 @@ fi
 
 if test -z "$GDAL_FOUND"
 then
-    AX_LIB_GDAL([1.8.0])
+    AX_LIB_GDAL([1.7.2])
     GDAL_FOUND="no"
     if test ! -z "$GDAL_CFLAGS" -a ! -z "$GDAL_LDFLAGS"; then
         GDAL_FOUND="yes"

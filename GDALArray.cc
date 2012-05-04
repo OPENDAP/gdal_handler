@@ -57,7 +57,9 @@ GDALArray::~GDALArray()
 
 bool
 GDALArray::read(const string &dataset)
-{
+{	
+    if (read_p())
+	return false;  
     throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 

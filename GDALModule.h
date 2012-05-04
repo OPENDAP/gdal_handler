@@ -26,7 +26,7 @@
 
 
 #ifndef A_GDALModule_H
-#define A_GDA:Module_H 1
+#define A_GDALModule_H 1
 
 #include <BESAbstractModule.h>
 

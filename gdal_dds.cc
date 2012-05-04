@@ -29,7 +29,7 @@
 
 #include <DDS.h>
 #include <DAS.h>
-#include <REsponseBuilder.h>
+#include <ResponseBuilder.h>
 
 #include "GDALTypes.h"
 

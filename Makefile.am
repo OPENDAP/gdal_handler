@@ -13,7 +13,7 @@ lib_bes_LTLIBRARIES = libgdal_handler.la
 
 SUBDIRS = . tests
 
-GDAL_SRCS = GDALArray.cc GDALGrid.cc GDALTypes.cc gdal_das.cc gdal_dds.cc
+GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc GDALArray.cc GDALGrid.cc GDALTypes.cc gdal_das.cc gdal_dds.cc
 
 GDAL_HDRS = GDALTypes.h
 

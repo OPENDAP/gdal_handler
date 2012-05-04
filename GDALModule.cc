@@ -28,19 +28,18 @@
 
 #include <iostream>
 
+using std::endl;
+
 #include "GDALModule.h"
 
 #include <BESRequestHandlerList.h>
 #include "GDALRequestHandler.h"
-
 #include <BESDapService.h>
 #include <BESContainerStorageList.h>
 #include <BESContainerStorageCatalog.h>
 #include <BESCatalogDirectory.h>
 #include <BESCatalogList.h>
 #include <BESDebug.h>
-
-using std::endl;
 
 #define GDAL_CATALOG "catalog"
 
@@ -64,9 +63,9 @@ void GDALModule::initialize(const string & modname)
     }
 
     BESDEBUG("gdal", "    adding catalog container storage " << GDAL_CATALOG << endl);
-    if (!BESContainerStorageList::TheList()->ref_persistegdale(GDAL_CATALOG)) {
+    if (!BESContainerStorageList::TheList()->ref_persistence(GDAL_CATALOG)) {
         BESContainerStorageCatalog *csc = new BESContainerStorageCatalog(GDAL_CATALOG);
-        BESContainerStorageList::TheList()->add_persistegdale(csc);
+        BESContainerStorageList::TheList()->add_persistence(csc);
     }
     else {
         BESDEBUG("gdal", "    storage already exists, skipping" << endl);
@@ -88,7 +87,7 @@ void GDALModule::terminate(const string & modname)
         delete rh;
 
     BESDEBUG("gdal", "    removing catalog container storage" << GDAL_CATALOG << endl);
-    BESContainerStorageList::TheList()->deref_persistegdale(GDAL_CATALOG);
+    BESContainerStorageList::TheList()->deref_persistence(GDAL_CATALOG);
 
     BESDEBUG("gdal", "    removing " << GDAL_CATALOG << " catalog" << endl);
     BESCatalogList::TheCatalogList()->deref_catalog(GDAL_CATALOG);
