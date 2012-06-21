@@ -55,20 +55,21 @@ BES.LogVerbose=no
 # hdf4 and FreeForm) and the DAP basic and command modules:
 #
 # BES.modules=dap,cmd,ascii,usage,www,nc,h4,ff
-# BES.module.dap=@libdir@/bes/libdap_module.so
-# BES.module.cmd=@libdir@/bes/libdap_xml_module.so
-# BES.module.ascii=@libdir@/bes/libascii_module.so
-# BES.module.usage=@libdir@/bes/libusage_module.so
-# BES.module.www=@libdir@/bes/libwww_module.so
-# BES.module.nc=@libdir@/bes/libnc_module.so
-# BES.module.h4=@libdir@/bes/libhdf4_module.so
-# BES.module.ff=@libdir@/bes/libff_module.so
-# BES.module.csv=@libdir@/bes/libcsv_module.so
+# BES.module.dap=@beslibdir@/libdap_module.so
+# BES.module.cmd=@beslibdir@/libdap_xml_module.so
+# BES.module.ascii=@beslibdir@/libascii_module.so
+# BES.module.usage=@beslibdir@/libusage_module.so
+# BES.module.www=@beslibdir@/libwww_module.so
+# BES.module.nc=@beslibdir@/libnc_module.so
+# BES.module.h4=@beslibdir@/libhdf4_module.so
+# BES.module.ff=@beslibdir@/libff_module.so
+# BES.module.csv=@beslibdir@/libcsv_module.so
 
-BES.modules=dap,cmd,gdal
+BES.modules=dap,cmd,ascii,gd
 BES.module.dap=@beslibdir@/libdap_module.so
 BES.module.cmd=@beslibdir@/libdap_xml_module.so
-BES.module.gdal=@abs_top_builddir@/.libs/libgdal_handler.so
+BES.module.ascii=@beslibdir@/libascii_module.so
+BES.module.gd=@abs_top_builddir@/.libs/libgdal_handler.so
 
 
 #-----------------------------------------------------------------------#
@@ -105,9 +106,7 @@ BES.Data.RootDirectory=/dev/null
 # 'hdf', 'HDF' or 'eos' which may also end in '.gz' or '.bz2'. In the latter
 # case the file will be treated as a compressed file.
 
-# BES.Catalog.catalog.TypeMatch=nc:.*\.(nc|NC)(\.gz|\.bz2|\.Z)?$;h4.*\.(hdf|HDF|eos)(\.gz|\.bz2|\.Z)?$;
-
-BES.Catalog.catalog.TypeMatch=gdal:.*.(tif|TIF)(.bz2|.gz|.Z)?$;
+BES.Catalog.catalog.TypeMatch=gd:.*.(tif|TIF)(.bz2|.gz|.Z)?$;
 
 # Normally, when a client asks for a data catalog, all files and directories
 # are shown. Use the following two parameters to customize this behavior.
