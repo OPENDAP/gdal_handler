@@ -33,7 +33,7 @@ bes.conf: bes.conf.in ../config.status
 		-e "s%[@]sysconfdir[@]%${sysconfdir}%" \
 		-e "s%[@]beslibdir[@]%${BES_MODULE_DIR}%" \
 		-e "s%[@]datadir[@]%${datadir}%" \
-		-e "s%[@]abs_top_srcdir[@]%${canonical_abs_top_srcdir}%" \
+		-e "s%[@]abs_top_srcdir[@]%${abs_top_srcdir}%" \
 		-e "s%[@]abs_top_builddir[@]%${abs_top_builddir}%" \
 		-e "s%[@]bindir[@]%${bindir}%" $< > bes.conf
 

@@ -65,14 +65,10 @@ BES.LogVerbose=no
 # BES.module.ff=@libdir@/bes/libff_module.so
 # BES.module.csv=@libdir@/bes/libcsv_module.so
 
-BES.modules=dap,cmd,nc,h4,h5,fonc,ncml
+BES.modules=dap,cmd,gdal
 BES.module.dap=@beslibdir@/libdap_module.so
 BES.module.cmd=@beslibdir@/libdap_xml_module.so
-BES.module.nc=@beslibdir@/libnc_module.so
-BES.module.h4=@beslibdir@/libhdf4_module.so
-BES.module.h5=@beslibdir@/libhdf5_module.so
-BES.module.fonc=@beslibdir@/libfonc_module.so
-BES.module.ncml=@abs_top_builddir@/.libs/libncml_module.so
+BES.module.gdal=@abs_top_builddir@/.libs/libgdal_handler.so
 
 
 #-----------------------------------------------------------------------#
@@ -97,7 +93,7 @@ BES.module.ncml=@abs_top_builddir@/.libs/libncml_module.so
 # to change this to point to your data! At this time the BES does not support
 # multiple RootDirectory values. 3/5/07 jhrg
 
-BES.Catalog.catalog.RootDirectory=@abs_top_srcdir@
+BES.Catalog.catalog.RootDirectory=@abs_top_srcdir@/data
 BES.Data.RootDirectory=/dev/null
 
 # The TypeMatch parameter is a list of handler/module names and a regular
@@ -111,7 +107,7 @@ BES.Data.RootDirectory=/dev/null
 
 # BES.Catalog.catalog.TypeMatch=nc:.*\.(nc|NC)(\.gz|\.bz2|\.Z)?$;h4.*\.(hdf|HDF|eos)(\.gz|\.bz2|\.Z)?$;
 
-BES.Catalog.catalog.TypeMatch=nc:.*.nc(.bz2|.gz|.Z)?$;h4:.*.(hdf|HDF|eos)(.bz2|.gz|.Z)?$;csv:.*.csv(.bz2|.gz|.Z)?$;ncml:.*.ncml(.bz2|.gz|.Z)?$;h5:.*.h5(.bz2|.gz|.Z)?$;
+BES.Catalog.catalog.TypeMatch=gdal:.*.(tif|TIF)(.bz2|.gz|.Z)?$;
 
 # Normally, when a client asks for a data catalog, all files and directories
 # are shown. Use the following two parameters to customize this behavior.
@@ -149,7 +145,7 @@ BES.Catalog.catalog.FollowSymLinks=No
 # to provide direct access to the BES for the world. In general, if     #
 # that is the case, you should configure the BES to use SSL.            #
 #-----------------------------------------------------------------------#
-BES.ServerPort=10002
+BES.ServerPort=10022
 # BES.ServerUnixSocket=/tmp/bes.socket
 
 #-----------------------------------------------------------------------#
@@ -232,8 +228,6 @@ BES.Info.Type=xml
 BES.CacheDir=/tmp
 BES.CachePrefix=bes_cache
 BES.CacheSize=500
-BES.Uncompress.Retry=2000
-BES.Uncompress.NumTries=10
 
 #-----------------------------------------------------------------------#
 # If the symbolic name cannot be found in persistence, nice means simply#
@@ -274,6 +268,3 @@ BES.DefaultResponseMethod=POST
 # Data Handler Specific key/value parameters                            #
 #                                                                       #
 #-----------------------------------------------------------------------#
-NCML.TempDirectory=/tmp
-NCML.GlobalAttributesContainerName=NC_GLOBAL
-
