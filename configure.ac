@@ -32,6 +32,14 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 # AC_PROG_RANLIB
 
+dnl echo "CC = $CC"
+if test "$CC" = "gcc"
+then
+    AM_CONDITIONAL([COMPILER_IS_GCC],[true])
+else
+    AM_CONDITIONAL([COMPILER_IS_GCC],[false])
+fi
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h])
@@ -91,7 +99,26 @@ then
     AC_MSG_ERROR([I could not find GDAL.])
 fi
 
-OPENDAP_DEBUG_OPTION
+AC_ARG_ENABLE([developer],
+[AS_HELP_STRING([--enable-developer],
+[Build a debug (-g3 -O0) version of this code (default is no)])],
+[case "${enableval}" in
+       yes) build_hyrax_debug=true ;;
+       no)  build_hyrax_debug=false ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+     esac],
+[build_hyrax_debug=false])
+
+if test "x$build_hyrax_debug" = "xtrue"; then
+   AC_MSG_NOTICE(["Building debug version"])
+else
+   AC_MSG_NOTICE(["Not building debug version"])
+   AC_DEFINE([NDEBUG], [1], [Remove this to activate assert() calls.])
+fi
+AM_CONDITIONAL([BUILD_HYRAX_DEBUG], [test "x$build_hyrax_debug" = "xtrue"])
+
+
+dnl OPENDAP_DEBUG_OPTION
 
 # When we have tests, add these: tests/Makefile tests/atlocal
 AC_CONFIG_FILES([Makefile tests/Makefile tests/atlocal tests/package.m4])

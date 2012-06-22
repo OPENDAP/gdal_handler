@@ -24,6 +24,7 @@
 #include <string>
 
 #include <InternalErr.h>
+#include <debug.h>
 
 #include "GDALTypes.h"
 
@@ -34,12 +35,15 @@ using namespace libdap ;
 /*                              GDALArray                               */
 /* ==================================================================== */
 /************************************************************************/
-
+#if 0
 Array *
 NewArray(const string &n, BaseType *v)
 {
+    cerr << "Making a new GDALArray" << endl;
+
     return new GDALArray(n, v);
 }
+#endif
 
 BaseType *
 GDALArray::ptr_duplicate()
@@ -56,10 +60,12 @@ GDALArray::~GDALArray()
 }
 
 bool
-GDALArray::read(const string &dataset)
-{	
+GDALArray::read(const string &)
+{
+    DBG(cerr << "In GDALArray::read" << endl);
+
     if (read_p())
-	return false;  
+        return false;
     throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 

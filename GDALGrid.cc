@@ -25,6 +25,8 @@
 
 #include <cpl_conv.h>
 
+#include <debug.h>
+
 #include "GDALTypes.h"
 
 
@@ -33,14 +35,15 @@
 /*                               GDALGrid                               */
 /* ==================================================================== */
 /************************************************************************/
-
+#if 0
 Grid *
 NewGrid(const string &n, GDALDatasetH hDS, GDALRasterBandH hBand,
         GDALDataType eBufType )
 {
+    cerr << "Building a new GDAL Grid object" << endl;
     return new GDALGrid(n, hDS, hBand, eBufType);
 }
-
+#endif
 // protected
 
 BaseType *
@@ -64,8 +67,10 @@ GDALGrid::~GDALGrid()
 }
 
 bool
-GDALGrid::read(const string &dataset)
+GDALGrid::read(const string &)
 {
+    DBG(cerr << "In GDALGrid::read" << endl);
+
     bool status = false;
 
     if (read_p()) // nothing to do
@@ -113,6 +118,7 @@ GDALGrid::read(const string &dataset)
 /*      Allocate buffer.                                                */
 /* -------------------------------------------------------------------- */
     int nPixelSize = GDALGetDataTypeSize( eBufType ) / 8;
+    // TODO use vector<char>
     void *pData = CPLMalloc( nBufXSize * nBufYSize * nPixelSize );
 
 /* -------------------------------------------------------------------- */
@@ -126,12 +132,13 @@ GDALGrid::read(const string &dataset)
                       pData, nBufXSize, nBufYSize, eBufType, 0, 0 );
 
     
-    // should check for errors!
+    // TODO should check for errors!
 
+    // TODO use set_value()
+    array->val2buf( pData );
     array->set_read_p( true );
     set_read_p( true );
 
-    array->val2buf( pData );
 
     CPLFree( pData );
 
@@ -188,6 +195,9 @@ GDALGrid::read(const string &dataset)
     array->set_read_p( true );
     
     CPLFree( padfMap );
+
+    // TODO Added this; maybe it's not needed? jhrg 6/21/12
+    set_read_p(true);
 
     return status;
 }

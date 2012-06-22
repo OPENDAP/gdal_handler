@@ -30,110 +30,12 @@
 #include <DDS.h>
 #include <DAS.h>
 #include <ResponseBuilder.h>
+#include <debug.h>
 
 #include "GDALTypes.h"
 
 void gdal_read_dataset_variables(DDS &dds, const string &filename);
 extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
-
-#if 0
-
-// Noise from the old days... jhrg 1/12/12
-
-const string cgi_version = "gdal-dods/3.4.8"; /* ?? */
-
-/************************************************************************/
-/*                                main()                                */
-/************************************************************************/
-int 
-main(int argc, char *argv[])
-{
-    int i;
-
-    fprintf( stderr, "----------------\n" );
-    for( i = 0; i < argc; i++ )
-        fprintf( stderr, "%s ", argv[i] );
-    fprintf( stderr, "\n" );
-    fprintf( stderr, "----------------\n" );
-
-    try { 
-	DODSFilter df(argc, argv);
-	if (df.get_cgi_version() == "")
-	    df.set_cgi_version(cgi_version);
-
-/* -------------------------------------------------------------------- */
-/*      Switch based on the request made.                               */
-/* -------------------------------------------------------------------- */
-
-	switch (df.get_response()) {
-
-	  case DODSFilter::DAS_Response: {
-	    DAS das;
-
-	    read_variables(das, df.get_dataset_name());
-	    df.read_ancillary_das(das);
-	    df.send_das(das);
-	    break;
-	  }
-
-	  case DODSFilter::DDS_Response: {
-	    DDS dds;
-
-	    read_descriptors(dds, df.get_dataset_name());
-	    df.read_ancillary_dds(dds);
-	    df.send_dds(dds, true);
-	    break;
-	  }
-
-	  case DODSFilter::DataDDS_Response: {
-	    DDS dds;
-
-	    dds.filename(df.get_dataset_name());
-	    read_descriptors(dds, df.get_dataset_name()); 
-	    df.read_ancillary_dds(dds);
-	    df.send_data(dds, stdout);
-	    break;
-	  }
-
-#ifdef notdef
-	  case DODSFilter::DDX_Response: {
-	    DDS dds;
-	    DAS das;
-
-	    dds.filename(df.get_dataset_name());
-
-	    read_descriptors(dds, df.get_dataset_name()); 
-	    df.read_ancillary_dds(dds);
-
-	    read_variables(das, df.get_dataset_name());
-	    df.read_ancillary_das(das);
-
-	    dds.transfer_attributes(&das);
-
-	    df.send_ddx(dds, stdout);
-	    break;
-	  }
-#endif
-
-	  case DODSFilter::Version_Response: {
-	    df.send_version_info();
-
-	    break;
-	  }
-
-	  default:
-	    df.print_usage();	// Throws Error
-	}
-    }
-    catch (Error &e) {
-	set_mime_text(cout, dods_error, cgi_version);
-	e.print(cout);
-	return 1;
-    }
-
-    return 0;
-}
-#endif
 
 /************************************************************************/
 /*                          read_descriptors()                          */
@@ -142,18 +44,14 @@ main(int argc, char *argv[])
 void gdal_read_dataset_variables(DDS &dds, const string &filename)
 {
     GDALDatasetH hDS;
-#if 0
-    // Old? From teh Server3 days? jhrg 1/12/12
-    dds.set_dataset_name( name_path( filename ) );
-#endif
 /* -------------------------------------------------------------------- */
 /*      Open the dataset.                                               */
 /* -------------------------------------------------------------------- */
-        GDALAllRegister();
-        hDS = GDALOpen( filename.c_str(), GA_ReadOnly );
-        
-        if( hDS == NULL )
-            throw Error(string(CPLGetLastErrorMsg()));
+    GDALAllRegister();
+    hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+
+    if (hDS == NULL)
+        throw Error(string(CPLGetLastErrorMsg()));
 
 
 /* -------------------------------------------------------------------- */
@@ -164,50 +62,52 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
     for( int iBand = 0; iBand < GDALGetRasterCount( hDS ); iBand++ )
     {
         GDALRasterBandH hBand = GDALGetRasterBand( hDS, iBand+1 );
-        BaseType *bt;
+        //BaseType *bt;
+        // TODO ostringstream
         char szName[32];
-
+        // nsprintf if not ostringstream
         sprintf( szName, "band_%d", iBand+1 );
 
         eBufType = GDALGetRasterDataType( hBand );
 
+        BaseType *bt;
         switch( GDALGetRasterDataType( hBand ) )
         {
           case GDT_Byte:
-            bt = NewByte( string(szName) );
+            bt = new Byte( string(szName) );
             break;
 
           case GDT_UInt16:
-            bt = NewUInt16( string(szName) );
+            bt = new UInt16( string(szName) );
             break;
-            
+
           case GDT_Int16:
-            bt = NewInt16( string(szName) );
+            bt = new Int16( string(szName) );
             break;
-            
+
           case GDT_UInt32:
-            bt = NewUInt32( string(szName) );
+            bt = new UInt32( string(szName) );
             break;
-            
+
           case GDT_Int32:
-            bt = NewInt32( string(szName) );
+            bt = new Int32( string(szName) );
             break;
-            
+
           case GDT_Float32:
-            bt = NewFloat32( string(szName) );
+            bt = new Float32( string(szName) );
             break;
-            
+
           case GDT_Float64:
-            bt = NewFloat64( string(szName) );
+            bt = new Float64( string(szName) );
             break;
-            
+
           case GDT_CFloat32:
           case GDT_CFloat64:
           case GDT_CInt16:
           case GDT_CInt32:
           default:
-            // eventually we need to preserve complex info 
-            bt = NewFloat64( string(szName) ); 
+            // TODO eventually we need to preserve complex info
+            bt = new Float64( string(szName) );
             eBufType = GDT_Float64;
             break;
         }
@@ -217,14 +117,14 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
 /* -------------------------------------------------------------------- */
         Grid *grid;
 
-        grid = NewGrid( string(szName), hDS, hBand, eBufType );
+        grid = new GDALGrid( string(szName), hDS, hBand, eBufType );
 
 /* -------------------------------------------------------------------- */
 /*      Make into an Array for the raster data with appropriate         */
 /*      dimensions.                                                     */
 /* -------------------------------------------------------------------- */
         Array *ar;
-        ar = NewArray( string(szName), bt );
+        ar = new GDALArray( string(szName), bt );
         
         ar->add_var( bt );
         ar->append_dim( GDALGetRasterYSize( hDS ), "northing" );
@@ -235,21 +135,22 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
 /* -------------------------------------------------------------------- */
 /*      Add the dimension map arrays.                                   */
 /* -------------------------------------------------------------------- */
-        bt = NewFloat64( string("northing") );
-        ar = NewArray( "northing", bt );
+        bt = new GDALFloat64( string("northing") );
+        ar = new GDALArray( "northing", bt );
         ar->add_var( bt );
         ar->append_dim( GDALGetRasterYSize( hDS ), "northing" );
         grid->add_var( ar, maps );
 
-        bt = NewFloat64( string("easting") );
-        ar = NewArray( "easting", bt );
+        bt = new GDALFloat64( string("easting") );
+        ar = new GDALArray( "easting", bt );
         ar->add_var( bt );
         ar->append_dim( GDALGetRasterXSize( hDS ), "easting" );
         grid->add_var( ar, maps );
 
+        DBG(cerr << "Type of grid: " << typeid(grid).name() << endl);
+
         dds.add_var( grid );
     }
-        
 }
 
 // $Log: gdal_handler.cc,v $

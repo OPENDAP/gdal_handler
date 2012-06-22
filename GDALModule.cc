@@ -48,13 +48,16 @@ void GDALModule::initialize(const string & modname)
     BESDEBUG("gdal", "Initializing GDAL module " << modname << endl);
 
     BESDEBUG("gdal", "    adding " << modname << " request handler" << endl);
+
     BESRequestHandler *handler = new GDALRequestHandler(modname);
     BESRequestHandlerList::TheList()->add_handler(modname, handler);
 
     BESDEBUG("gdal", modname << " handles dap services" << endl);
+
     BESDapService::handle_dap_service(modname);
 
     BESDEBUG("gdal", "    adding " << GDAL_CATALOG << " catalog" << endl);
+
     if (!BESCatalogList::TheCatalogList()->ref_catalog(GDAL_CATALOG)) {
         BESCatalogList::TheCatalogList()-> add_catalog(new BESCatalogDirectory(GDAL_CATALOG));
     }
@@ -63,6 +66,7 @@ void GDALModule::initialize(const string & modname)
     }
 
     BESDEBUG("gdal", "    adding catalog container storage " << GDAL_CATALOG << endl);
+
     if (!BESContainerStorageList::TheList()->ref_persistence(GDAL_CATALOG)) {
         BESContainerStorageCatalog *csc = new BESContainerStorageCatalog(GDAL_CATALOG);
         BESContainerStorageList::TheList()->add_persistence(csc);

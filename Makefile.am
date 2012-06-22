@@ -8,6 +8,22 @@ AUTOMAKE_OPTIONS = foreign check-news
 
 ACLOCAL_AMFLAGS = -I conf
 
+AM_CXXFLAGS = 
+if COMPILER_IS_GCC
+AM_CXXFLAGS += -Wall -W -Wcast-align
+endif
+
+# These are not used by automake but are often useful for certain types of
+# debugging. The best way to use these is to run configure as:
+#     export CXXFLAGS='...'; ./configure --disable-shared
+# the --disable-shared is not required, but it seems to help with debuggers.
+CXXFLAGS_DEBUG = -g3 -O0 -fno-defer-pop -Wall -W -Wcast-align -Werror
+TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
+
+if BUILD_HYRAX_DEBUG
+AM_CXXFLAGS += $(CXXFLAGS_DEBUG)
+endif
+
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libgdal_handler.la
 

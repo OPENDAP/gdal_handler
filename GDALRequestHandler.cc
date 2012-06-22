@@ -52,6 +52,8 @@
 #include <BESUtil.h>
 #include <BESContextManager.h>
 
+#include <debug.h>
+
 #define GDAL_NAME "gdal"
 
 using namespace libdap;
@@ -76,7 +78,7 @@ static bool version_ge(const string &version, float value)
         float v;
         istringstream iss(version);
         iss >> v;
-        //cerr << "version: " << v << ", value: " << value << endl;
+
         return (v >= value);
     }
     catch (...) {
@@ -184,6 +186,8 @@ bool GDALRequestHandler::gdal_build_das(BESDataHandlerInterface & dhi)
 
 bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
 {
+    DBG(cerr << "In GDALRequestHandler::gdal_build_dds" << endl);
+
     BESResponseObject *response = dhi.response_handler->get_response_object();
     BESDDSResponse *bdds = dynamic_cast<BESDDSResponse *> (response);
     if (!bdds)
@@ -232,6 +236,8 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
 
 bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
 {
+    DBG(cerr << "In GDALRequestHandler::gdal_build_data" << endl);
+
     BESResponseObject *response = dhi.response_handler->get_response_object();
     BESDataDDSResponse *bdds = dynamic_cast<BESDataDDSResponse *> (response);
     if (!bdds)
@@ -245,7 +251,7 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
 
         gdal_read_dataset_variables(*dds, accessed);
 
-        Ancillary::read_ancillary_dds(*dds, accessed);
+        //Ancillary::read_ancillary_dds(*dds, accessed);
 
         DAS *das = new DAS;
         BESDASResponse bdas(das);
@@ -254,7 +260,14 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
         Ancillary::read_ancillary_das(*das, accessed);
 
         dds->transfer_attributes(das);
-
+#ifdef DEBUG_DEBUG
+        cerr << "About to print vars info..." << endl;
+        DDS::Vars_iter i = dds->var_begin();
+        while (i != dds->var_end()) {
+            BaseType *b = *i++;
+            cerr << b->name() << " is a " << b->type_name() << "(" << typeid(*b).name() << ")" << endl;
+        }
+#endif
         bdds->set_constraint(dhi);
 
         bdds->clear_container();
