@@ -192,25 +192,24 @@ public:
 /*                               GDALGrid                               */
 /************************************************************************/
 
-#if 0
-extern Grid * NewGrid(const string &n, GDALDatasetH, GDALRasterBandH, 
-                      GDALDataType );
-#endif
-
-
 class GDALGrid: public Grid {
 
     GDALDatasetH    hDS;
     GDALRasterBandH hBand;
     GDALDataType    eBufType;
     
+    void m_duplicate(const GDALGrid &g);
+
 public:
     GDALGrid(const string &n, GDALDatasetH, GDALRasterBandH, GDALDataType );
+    GDALGrid(const GDALGrid &rhs);
     virtual ~GDALGrid();
+
+    GDALGrid &operator=(const GDALGrid &rhs);
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read(/*const string &dataset*/);
 };
 
 // $Log: GDALTypes.h,v $

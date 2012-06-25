@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+//#define DODS_DEBUG 1
+
 #include <string>
 
 #include <InternalErr.h>

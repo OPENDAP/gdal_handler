@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+//#define DODS_DEBUG 1
+
 #include <string>
 
 #include <cpl_conv.h>
@@ -35,15 +37,19 @@
 /*                               GDALGrid                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Grid *
-NewGrid(const string &n, GDALDatasetH hDS, GDALRasterBandH hBand,
-        GDALDataType eBufType )
+
+void
+GDALGrid::m_duplicate(const GDALGrid &g)
 {
-    cerr << "Building a new GDAL Grid object" << endl;
-    return new GDALGrid(n, hDS, hBand, eBufType);
+    DBG(cerr << "GDALGrid::m_duplicate: " << g.name() << "source pointer value: " << &g
+    		<< ", dest pointer value: " << this << endl);
+
+    hDS = g.hDS;
+    hBand = g.hBand;
+    eBufType = g.eBufType;
 }
-#endif
+
+
 // protected
 
 BaseType *
@@ -62,12 +68,28 @@ GDALGrid::GDALGrid(const string &n, GDALDatasetH hDSIn,
     eBufType = eBufTypeIn;
 }
 
+GDALGrid::GDALGrid(const GDALGrid &rhs) :Grid(rhs)
+{
+	m_duplicate(rhs);
+}
+
+GDALGrid &GDALGrid::operator=(const GDALGrid &rhs)
+{
+    if (this == &rhs)
+        return *this;
+
+    //static_cast<GDALGrid&>(*this) = rhs;
+    m_duplicate(rhs);
+
+    return *this;
+}
+
 GDALGrid::~GDALGrid()
 {
 }
 
 bool
-GDALGrid::read(const string &)
+GDALGrid::read(/*const string &*/)
 {
     DBG(cerr << "In GDALGrid::read" << endl);
 
@@ -137,7 +159,7 @@ GDALGrid::read(const string &)
     // TODO use set_value()
     array->val2buf( pData );
     array->set_read_p( true );
-    set_read_p( true );
+    //set_read_p( true ); Set at the end of the method. jhrg 6/24/12
 
 
     CPLFree( pData );

@@ -22,6 +22,8 @@
 
 #include "config.h"
 
+//#define DODS_DEBUG 1
+
 #include <iostream>
 #include <string>
 
