@@ -63,6 +63,8 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
 
     for( int iBand = 0; iBand < GDALGetRasterCount( hDS ); iBand++ )
     {
+        DBG(cerr << "In dgal_dds.cc  iBand" << endl);
+
         GDALRasterBandH hBand = GDALGetRasterBand( hDS, iBand+1 );
         //BaseType *bt;
         // TODO ostringstream
@@ -118,8 +120,7 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
 /*      Create a grid to hold the raster.                               */
 /* -------------------------------------------------------------------- */
         Grid *grid;
-
-        grid = new GDALGrid( string(szName), hDS, hBand, eBufType );
+        grid = new GDALGrid( filename, hBand, eBufType );
 
 /* -------------------------------------------------------------------- */
 /*      Make into an Array for the raster data with appropriate         */
@@ -153,6 +154,11 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
 
         dds.add_var( grid );
     }
+
+/* -------------------------------------------------------------------- */
+/*      Close the dataset.                                               */
+/* -------------------------------------------------------------------- */
+    GDALClose(hDS);
 }
 
 // $Log: gdal_handler.cc,v $

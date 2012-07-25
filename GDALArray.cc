@@ -20,6 +20,7 @@
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 #include "config.h"
+#include "BESDebug.h"
 
 //#define DODS_DEBUG 1
 
@@ -55,6 +56,7 @@ GDALArray::ptr_duplicate()
 
 GDALArray::GDALArray(const string &n, BaseType *v) : Array(n, v)
 {
+    BESDEBUG("gdal", " Called GDALArray::GDALARRAY()" << endl);
 }
 
 GDALArray::~GDALArray()

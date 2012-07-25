@@ -194,15 +194,15 @@ public:
 
 class GDALGrid: public Grid {
 
-    GDALDatasetH    hDS;
     GDALRasterBandH hBand;
     GDALDataType    eBufType;
+    string filename;   
     
     void m_duplicate(const GDALGrid &g);
 
 public:
-    GDALGrid(const string &n, GDALDatasetH, GDALRasterBandH, GDALDataType );
     GDALGrid(const GDALGrid &rhs);
+    GDALGrid(const string &filenameIn, GDALRasterBandH, GDALDataType);   
     virtual ~GDALGrid();
 
     GDALGrid &operator=(const GDALGrid &rhs);

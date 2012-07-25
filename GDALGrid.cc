@@ -20,10 +20,13 @@
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 #include "config.h"
+#include "BESDebug.h"
 
 //#define DODS_DEBUG 1
 
 #include <string>
+
+#include <gdal.h>
 
 #include <cpl_conv.h>
 
@@ -44,7 +47,7 @@ GDALGrid::m_duplicate(const GDALGrid &g)
     DBG(cerr << "GDALGrid::m_duplicate: " << g.name() << "source pointer value: " << &g
     		<< ", dest pointer value: " << this << endl);
 
-    hDS = g.hDS;
+    filename = g.filename;
     hBand = g.hBand;
     eBufType = g.eBufType;
 }
@@ -60,17 +63,18 @@ GDALGrid::ptr_duplicate()
 
 // public
 
-GDALGrid::GDALGrid(const string &n, GDALDatasetH hDSIn, 
-                   GDALRasterBandH hBandIn, GDALDataType eBufTypeIn ) : Grid(n)
-{
-    hDS = hDSIn;
+
+GDALGrid::GDALGrid(const string &filenameIn, GDALRasterBandH  hBandIn, 
+		GDALDataType eBufTypeIn) : Grid(filenameIn) 
+{  
+    filename = filenameIn;  
     hBand = hBandIn;
     eBufType = eBufTypeIn;
 }
 
 GDALGrid::GDALGrid(const GDALGrid &rhs) :Grid(rhs)
 {
-	m_duplicate(rhs);
+     m_duplicate(rhs);
 }
 
 GDALGrid &GDALGrid::operator=(const GDALGrid &rhs)
@@ -91,12 +95,25 @@ GDALGrid::~GDALGrid()
 bool
 GDALGrid::read(/*const string &*/)
 {
-    DBG(cerr << "In GDALGrid::read" << endl);
 
     bool status = false;
 
+    BESDEBUG("gdal", "Entering GDALGrid::read()" << endl); 
+
     if (read_p()) // nothing to do
         return false;
+
+/* -------------------------------------------------------------------- */
+/*      Open the dataset.                                               */
+/* -------------------------------------------------------------------- */
+    GDALDatasetH hDS;
+    GDALAllRegister();  // even though the calling function called this. 
+
+    hDS = GDALOpen( filename.c_str(), GA_ReadOnly );
+
+    if( hDS == NULL )    
+        throw Error(string(CPLGetLastErrorMsg()));
+    
 
 /* -------------------------------------------------------------------- */
 /*      Collect the x and y sampling values from the constraint.        */
@@ -220,6 +237,11 @@ GDALGrid::read(/*const string &*/)
 
     // TODO Added this; maybe it's not needed? jhrg 6/21/12
     set_read_p(true);
+
+/* -------------------------------------------------------------------- */
+/*      Close the dataset.                                              */
+/* -------------------------------------------------------------------- */
+    GDALClose(hDS);
 
     return status;
 }
