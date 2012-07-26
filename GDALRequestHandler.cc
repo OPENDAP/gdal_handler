@@ -32,6 +32,7 @@
 #include <string>
 #include <sstream>
 
+#include "GDAL_DDS.h"
 #include "GDALRequestHandler.h"
 
 #include <BESResponseHandler.h>
@@ -64,7 +65,7 @@ bool GDALRequestHandler::_ignore_unknown_types = false;
 bool GDALRequestHandler::_ignore_unknown_types_set = false;
 
 extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
-extern void gdal_read_dataset_variables(DDS & dds, const string & filename);
+extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);
 
 /** Is the version number string greater than or equal to the value.
  * @note Works only for versions with zero or one dot. If the conversion of
@@ -192,24 +193,26 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
     BESDDSResponse *bdds = dynamic_cast<BESDDSResponse *> (response);
     if (!bdds)
         throw BESInternalError("cast error", __FILE__, __LINE__);
+
     try {
         bdds->set_container(dhi.container->get_symbolic_name());
         DDS *dds = bdds->get_dds();
-        string accessed = dhi.container->access();
-        dds->filename(accessed);
 
-        gdal_read_dataset_variables(*dds, accessed);
+        string filename = dhi.container->access();
+        dds->filename(filename);
 
-        Ancillary::read_ancillary_dds(*dds, accessed);
+        // Here the handler does not need the open dataset handle, so
+        // it closes it right away.
+        GDALDatasetH hDS = gdal_read_dataset_variables(dds, filename);
+        GDALClose(hDS);
 
         DAS *das = new DAS;
         BESDASResponse bdas(das);
         bdas.set_container(dhi.container->get_symbolic_name());
-        gdal_read_dataset_attributes(*das, accessed);
-        Ancillary::read_ancillary_das(*das, accessed);
+        gdal_read_dataset_attributes(*das, filename);
+        Ancillary::read_ancillary_das(*das, filename);
 
         dds->transfer_attributes(das);
-
         bdds->set_constraint(dhi);
 
         bdds->clear_container();
@@ -245,25 +248,39 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
 
     try {
         bdds->set_container(dhi.container->get_symbolic_name());
-        DataDDS *dds = bdds->get_dds();
-        string accessed = dhi.container->access();
-        dds->filename(accessed);
 
-        gdal_read_dataset_variables(*dds, accessed);
+        // This copies the vanilla DDS into a new GDALDDS object, where the
+        // handler can store extra information about the dataset.
+        GDALDDS *gdds = new GDALDDS(bdds->get_dds());
 
-        //Ancillary::read_ancillary_dds(*dds, accessed);
+        // Now delete the old DDS object
+        delete bdds->get_dds();
+
+        // Now make the BESDataDDSResponse object use our new object. When it
+        // deletes the GDALDDS, the GDAL library will be used to close the
+        // dataset.
+        bdds->set_dds(gdds);
+
+        string filename = dhi.container->access();
+        gdds->filename(filename);
+
+        // Save the dataset handle so that it can be closed later
+        // when the BES is done with the DDS (which is really a GDALDDS,
+        // spawn of DataDDS...)
+        GDALDatasetH hDS = gdal_read_dataset_variables(gdds, filename);
+        gdds->setGDALDataset(hDS);
 
         DAS *das = new DAS;
         BESDASResponse bdas(das);
         bdas.set_container(dhi.container->get_symbolic_name());
-        gdal_read_dataset_attributes(*das, accessed);
-        Ancillary::read_ancillary_das(*das, accessed);
+        gdal_read_dataset_attributes(*das, filename);
+        Ancillary::read_ancillary_das(*das, filename);
 
-        dds->transfer_attributes(das);
+        gdds->transfer_attributes(das);
 #ifdef DEBUG_DEBUG
         cerr << "About to print vars info..." << endl;
-        DDS::Vars_iter i = dds->var_begin();
-        while (i != dds->var_end()) {
+        DDS::Vars_iter i = gdds->var_begin();
+        while (i != gdds->var_end()) {
             BaseType *b = *i++;
             cerr << b->name() << " is a " << b->type_name() << "(" << typeid(*b).name() << ")" << endl;
         }

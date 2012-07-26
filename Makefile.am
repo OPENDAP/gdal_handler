@@ -31,7 +31,7 @@ SUBDIRS = . tests
 
 GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc GDALArray.cc GDALGrid.cc GDALTypes.cc gdal_das.cc gdal_dds.cc
 
-GDAL_HDRS = GDALTypes.h
+GDAL_HDRS = GDALTypes.h GDAL_DDS.h
 
 libgdal_handler_la_SOURCES = $(GDAL_SRCS) $(GDAL_HDRS)
 libgdal_handler_la_CPPFLAGS = $(GDAL_CFLAGS) $(BES_CPPFLAGS) $(DAP_CFLAGS) 

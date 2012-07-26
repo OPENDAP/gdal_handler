@@ -25,6 +25,7 @@
 //#define DODS_DEBUG 1
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include <gdal.h>
@@ -34,21 +35,25 @@
 #include <ResponseBuilder.h>
 #include <debug.h>
 
+//#include "GDAL_DDS.h"
 #include "GDALTypes.h"
 
-void gdal_read_dataset_variables(DDS &dds, const string &filename);
 extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
 
 /************************************************************************/
 /*                          read_descriptors()                          */
 /************************************************************************/
 
-void gdal_read_dataset_variables(DDS &dds, const string &filename)
+GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
 {
     GDALDatasetH hDS;
 /* -------------------------------------------------------------------- */
 /*      Open the dataset.                                               */
 /* -------------------------------------------------------------------- */
+
+    // TODO Since this code no longer closes the dataset, it would be
+    // better to move the open operation outside it, to the caller.
+    // jhrg 7/26/12
     GDALAllRegister();
     hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
 
@@ -66,11 +71,15 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
         DBG(cerr << "In dgal_dds.cc  iBand" << endl);
 
         GDALRasterBandH hBand = GDALGetRasterBand( hDS, iBand+1 );
+#if 0
         //BaseType *bt;
         // TODO ostringstream
         char szName[32];
         // nsprintf if not ostringstream
         sprintf( szName, "band_%d", iBand+1 );
+#endif
+        ostringstream oss;
+        oss << "band_" << iBand+1;
 
         eBufType = GDALGetRasterDataType( hBand );
 
@@ -78,31 +87,31 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
         switch( GDALGetRasterDataType( hBand ) )
         {
           case GDT_Byte:
-            bt = new Byte( string(szName) );
+            bt = new Byte( oss.str() );
             break;
 
           case GDT_UInt16:
-            bt = new UInt16( string(szName) );
+            bt = new UInt16( oss.str() );
             break;
 
           case GDT_Int16:
-            bt = new Int16( string(szName) );
+            bt = new Int16( oss.str() );
             break;
 
           case GDT_UInt32:
-            bt = new UInt32( string(szName) );
+            bt = new UInt32( oss.str() );
             break;
 
           case GDT_Int32:
-            bt = new Int32( string(szName) );
+            bt = new Int32( oss.str() );
             break;
 
           case GDT_Float32:
-            bt = new Float32( string(szName) );
+            bt = new Float32( oss.str() );
             break;
 
           case GDT_Float64:
-            bt = new Float64( string(szName) );
+            bt = new Float64( oss.str() );
             break;
 
           case GDT_CFloat32:
@@ -111,7 +120,7 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
           case GDT_CInt32:
           default:
             // TODO eventually we need to preserve complex info
-            bt = new Float64( string(szName) );
+            bt = new Float64( oss.str() );
             eBufType = GDT_Float64;
             break;
         }
@@ -121,50 +130,43 @@ void gdal_read_dataset_variables(DDS &dds, const string &filename)
 /* -------------------------------------------------------------------- */
         Grid *grid;
         grid = new GDALGrid( filename, hBand, eBufType );
+        grid->set_name(oss.str());
 
 /* -------------------------------------------------------------------- */
 /*      Make into an Array for the raster data with appropriate         */
 /*      dimensions.                                                     */
 /* -------------------------------------------------------------------- */
         Array *ar;
-        ar = new GDALArray( string(szName), bt );
-        
-        ar->add_var( bt );
+        // A 'feature' of Array is that it copies the variable passed to
+        // its ctor. To get around that, pass null and use add_var_nocopy().
+        ar = new GDALArray( oss.str(), 0 );
+        ar->add_var_nocopy( bt );
         ar->append_dim( GDALGetRasterYSize( hDS ), "northing" );
         ar->append_dim( GDALGetRasterXSize( hDS ), "easting" );
 
-        grid->add_var( ar, array );
+        grid->add_var_nocopy( ar, array );
 
 /* -------------------------------------------------------------------- */
 /*      Add the dimension map arrays.                                   */
 /* -------------------------------------------------------------------- */
-        bt = new GDALFloat64( string("northing") );
-        ar = new GDALArray( "northing", bt );
-        ar->add_var( bt );
+        bt = new GDALFloat64( "northing" );
+        ar = new GDALArray( "northing", 0 );
+        ar->add_var_nocopy( bt );
         ar->append_dim( GDALGetRasterYSize( hDS ), "northing" );
-        grid->add_var( ar, maps );
 
-        bt = new GDALFloat64( string("easting") );
-        ar = new GDALArray( "easting", bt );
-        ar->add_var( bt );
+        grid->add_var_nocopy( ar, maps );
+
+        bt = new GDALFloat64( "easting" );
+        ar = new GDALArray( "easting", 0 );
+        ar->add_var_nocopy( bt );
         ar->append_dim( GDALGetRasterXSize( hDS ), "easting" );
-        grid->add_var( ar, maps );
+
+        grid->add_var_nocopy( ar, maps );
 
         DBG(cerr << "Type of grid: " << typeid(grid).name() << endl);
 
-        dds.add_var( grid );
+        dds->add_var_nocopy( grid );
     }
 
-/* -------------------------------------------------------------------- */
-/*      Close the dataset.                                               */
-/* -------------------------------------------------------------------- */
-    GDALClose(hDS);
+    return hDS;
 }
-
-// $Log: gdal_handler.cc,v $
-// Revision 1.1  2004/10/19 20:38:28  warmerda
-// New
-//
-// Revision 1.1  2004/10/04 14:29:29  warmerda
-// New
-//

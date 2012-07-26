@@ -63,7 +63,7 @@ GDALGrid::ptr_duplicate()
 
 // public
 
-
+// FIXME Cleanup (remove filename param?)
 GDALGrid::GDALGrid(const string &filenameIn, GDALRasterBandH  hBandIn, 
 		GDALDataType eBufTypeIn) : Grid(filenameIn) 
 {  
@@ -82,7 +82,6 @@ GDALGrid &GDALGrid::operator=(const GDALGrid &rhs)
     if (this == &rhs)
         return *this;
 
-    //static_cast<GDALGrid&>(*this) = rhs;
     m_duplicate(rhs);
 
     return *this;
@@ -93,7 +92,7 @@ GDALGrid::~GDALGrid()
 }
 
 bool
-GDALGrid::read(/*const string &*/)
+GDALGrid::read()
 {
 
     bool status = false;
@@ -104,21 +103,9 @@ GDALGrid::read(/*const string &*/)
         return false;
 
 /* -------------------------------------------------------------------- */
-/*      Open the dataset.                                               */
-/* -------------------------------------------------------------------- */
-    GDALDatasetH hDS;
-    GDALAllRegister();  // even though the calling function called this. 
-
-    hDS = GDALOpen( filename.c_str(), GA_ReadOnly );
-
-    if( hDS == NULL )    
-        throw Error(string(CPLGetLastErrorMsg()));
-    
-
-/* -------------------------------------------------------------------- */
 /*      Collect the x and y sampling values from the constraint.        */
 /* -------------------------------------------------------------------- */
-    GDALArray *array = dynamic_cast<GDALArray*>(array_var());
+    GDALArray *array = static_cast<GDALArray*>(array_var());
     Array::Dim_iter p = array->dim_begin();
     int start = array->dimension_start(p,true);
     int stride = array->dimension_stride(p, true);
@@ -185,10 +172,21 @@ GDALGrid::read(/*const string &*/)
 /*      Read or default the geotransform used to generate the           */
 /*      georeferencing maps.                                            */
 /* -------------------------------------------------------------------- */
+
+    // Move this into the gdal_dds.cc code so that it store this in the
+    // Grid or maybe in the GDALDDS instance? Then we can avoid a second
+    // open/read operation on the file. jhrg
+    GDALDatasetH hDS;
+    GDALAllRegister(); // even though the calling function called this.
+
+    hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+
+    if (hDS == NULL)
+        throw Error(string(CPLGetLastErrorMsg()));
+
     double adfGeoTransform[6];
 
-    if( GDALGetGeoTransform( hDS, adfGeoTransform ) != CE_None )
-    {
+    if (GDALGetGeoTransform(hDS, adfGeoTransform) != CE_None) {
         adfGeoTransform[0] = 0.0;
         adfGeoTransform[1] = 1.0;
         adfGeoTransform[2] = 0.0;
@@ -196,6 +194,8 @@ GDALGrid::read(/*const string &*/)
         adfGeoTransform[4] = 0.0;
         adfGeoTransform[5] = 1.0;
     }
+
+    GDALClose(hDS);
 
 /* -------------------------------------------------------------------- */
 /*      Set "y" map array.                                              */
@@ -211,7 +211,7 @@ GDALGrid::read(/*const string &*/)
     }
 
     Map_iter miter = map_begin(); 
-    array = dynamic_cast<GDALArray*>( (*miter) );
+    array = static_cast<GDALArray*>( (*miter) );
     array->val2buf( (void *) padfMap );
     array->set_read_p( true );
     
@@ -229,7 +229,7 @@ GDALGrid::read(/*const string &*/)
     }
 
     ++miter;
-    array = dynamic_cast<GDALArray*>( *miter );
+    array = static_cast<GDALArray*>( *miter );
     array->val2buf( (void *) padfMap );
     array->set_read_p( true );
     
@@ -237,11 +237,6 @@ GDALGrid::read(/*const string &*/)
 
     // TODO Added this; maybe it's not needed? jhrg 6/21/12
     set_read_p(true);
-
-/* -------------------------------------------------------------------- */
-/*      Close the dataset.                                              */
-/* -------------------------------------------------------------------- */
-    GDALClose(hDS);
 
     return status;
 }
