@@ -25,7 +25,7 @@ AM_CXXFLAGS += $(CXXFLAGS_DEBUG)
 endif
 
 lib_besdir=$(libdir)/bes
-lib_bes_LTLIBRARIES = libgdal_handler.la
+lib_bes_LTLIBRARIES = libgdal_module.la
 
 SUBDIRS = . tests
 
@@ -33,10 +33,10 @@ GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc GDALArray.cc GDALGrid.cc GDALTyp
 
 GDAL_HDRS = GDALTypes.h GDAL_DDS.h
 
-libgdal_handler_la_SOURCES = $(GDAL_SRCS) $(GDAL_HDRS)
-libgdal_handler_la_CPPFLAGS = $(GDAL_CFLAGS) $(BES_CPPFLAGS) $(DAP_CFLAGS) 
-libgdal_handler_la_LDFLAGS = -avoid-version -module $(GDAL_LDFLAGS)
-libgdal_handler_la_LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
+libgdal_module_la_SOURCES = $(GDAL_SRCS) $(GDAL_HDRS)
+libgdal_module_la_CPPFLAGS = $(GDAL_CFLAGS) $(BES_CPPFLAGS) $(DAP_CFLAGS) 
+libgdal_module_la_LDFLAGS = -avoid-version -module $(GDAL_LDFLAGS)
+libgdal_module_la_LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
 
 EXTRA_PROGRAMS = 
 
@@ -74,7 +74,7 @@ docs:
 C4_DIR=./cccc
 .PHONY: cccc
 cccc:	
-	cccc --outdir=$(C4_DIR) $(libgdal_handler_la_SOURCES)
+	cccc --outdir=$(C4_DIR) $(libgdal_module_la_SOURCES)
 
 ###########################################################################
 
