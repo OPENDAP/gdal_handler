@@ -200,6 +200,7 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
 
         string filename = dhi.container->access();
         dds->filename(filename);
+        dds->set_dataset_name(filename.substr(filename.find_last_of('/') + 1));
 
         // Here the handler does not need the open dataset handle, so
         // it closes it right away.
@@ -263,6 +264,7 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
 
         string filename = dhi.container->access();
         gdds->filename(filename);
+        gdds->set_dataset_name(filename.substr(filename.find_last_of('/') + 1));
 
         // Save the dataset handle so that it can be closed later
         // when the BES is done with the DDS (which is really a GDALDDS,
