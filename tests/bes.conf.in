@@ -69,7 +69,7 @@ BES.modules=dap,cmd,ascii,gd
 BES.module.dap=@beslibdir@/libdap_module.so
 BES.module.cmd=@beslibdir@/libdap_xml_module.so
 BES.module.ascii=@beslibdir@/libascii_module.so
-BES.module.gd=@abs_top_builddir@/.libs/libgdal_handler.so
+BES.module.gd=@abs_top_builddir@/.libs/libgdal_module.so
 
 
 #-----------------------------------------------------------------------#
