@@ -6,6 +6,6 @@
     <define name="d">
 	<container name="c" />
     </define>
-    <get type="das" definition="d" />
+    <get type="dds" definition="d" />
 </request>
 
