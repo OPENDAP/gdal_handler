@@ -46,7 +46,6 @@ using std::endl;
 void GDALModule::initialize(const string & modname)
 {
     BESDEBUG("gdal", "Initializing GDAL module " << modname << endl);
-
     BESDEBUG("gdal", "    adding " << modname << " request handler" << endl);
 
     BESRequestHandler *handler = new GDALRequestHandler(modname);
