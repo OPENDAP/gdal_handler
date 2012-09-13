@@ -169,17 +169,13 @@ bool GDALRequestHandler::gdal_build_das(BESDataHandlerInterface & dhi)
         throw;
     }
     catch (InternalErr & e) {
-        BESDapError ex(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
-        throw ex;
+        throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-        BESDapError ex(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
-        throw ex;
+        throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
-        string s = "unknown exception caught building DAS";
-        BESInternalFatalError ex(s, __FILE__, __LINE__);
-        throw ex;
+        throw BESInternalFatalError("unknown exception caught building DAS", __FILE__, __LINE__);
     }
 
     return true;
@@ -222,17 +218,13 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
         throw;
     }
     catch (InternalErr & e) {
-        BESDapError ex(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
-        throw ex;
+        throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-        BESDapError ex(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
-        throw ex;
+        throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
-        string s = "unknown exception caught building DDS";
-        BESInternalFatalError ex(s, __FILE__, __LINE__);
-        throw ex;
+        throw BESInternalFatalError("unknown exception caught building DDS", __FILE__, __LINE__);
     }
 
     return true;
@@ -295,17 +287,13 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
         throw;
     }
     catch (InternalErr & e) {
-        BESDapError ex(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
-        throw ex;
+        throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-        BESDapError ex(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
-        throw ex;
+        throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
-        string s = "unknown exception caught building DAS";
-        BESInternalFatalError ex(s, __FILE__, __LINE__);
-        throw ex;
+        throw BESInternalFatalError("unknown exception caught building DAS", __FILE__, __LINE__);
     }
 
     return true;

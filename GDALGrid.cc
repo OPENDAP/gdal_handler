@@ -94,7 +94,6 @@ GDALGrid::~GDALGrid()
 bool
 GDALGrid::read()
 {
-
     bool status = false;
 
     BESDEBUG("gdal", "Entering GDALGrid::read()" << endl); 
@@ -163,7 +162,7 @@ GDALGrid::read()
     // TODO use set_value()
     array->val2buf( pData );
     array->set_read_p( true );
-    //set_read_p( true ); Set at the end of the method. jhrg 6/24/12
+    // set_read_p( true ); Set at the end of the method. jhrg 6/24/12
 
 
     CPLFree( pData );
@@ -205,8 +204,7 @@ GDALGrid::read()
 
     padfMap = (double *) CPLMalloc(sizeof(double) * nBufYSize);
 
-    for( i = 0, iLine = start; iLine <= stop; iLine += stride )
-    {
+    for( i = 0, iLine = start; iLine <= stop; iLine += stride ) {
         padfMap[i++] = adfGeoTransform[3] + adfGeoTransform[5] * iLine;
     }
 
@@ -223,8 +221,7 @@ GDALGrid::read()
 
     padfMap = (double *) CPLMalloc(sizeof(double) * nBufXSize);
 
-    for( i = 0, iPixel = start_2; iPixel <= stop_2; iPixel += stride_2 )
-    {
+    for( i = 0, iPixel = start_2; iPixel <= stop_2; iPixel += stride_2 ) {
         padfMap[i++] = adfGeoTransform[0] + iPixel * adfGeoTransform[1];
     }
 

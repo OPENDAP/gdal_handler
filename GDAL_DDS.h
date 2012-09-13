@@ -27,10 +27,10 @@ using namespace libdap;
  * are still valid). When the DDS is deleted by the BES, the GDALDDS()
  * destructor closes the file.
  *
- * @note This was a great idea, but it's not possible without modifying the
- * BES so that it can be given a new DDS object to use.
- *
- * @todo Change DataDDS to DDS if we can...
+ * @todo Change DataDDS to DDS if we can... Doing that will enable the
+ * handler to use this to close the libraryusing this class. That is not
+ * strictly needed, but it would make both the DDS and DataDDS responses
+ * work the same way.
  */
 class GDALDDS : public DataDDS {
 private:
