@@ -32,7 +32,6 @@
 
 #include "GDALTypes.h"
 
-// TODO Cleanup/remove decl void gdal_read_dataset_attributes(DAS &das, const string &filename);
 static void translate_metadata( char **md, AttrTable *parent_table );
 static void attach_str_attr_item( AttrTable *parent_table, 
                                   const char *pszKey, const char *pszValue );

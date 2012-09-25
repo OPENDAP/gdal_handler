@@ -45,7 +45,7 @@ EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec data OSX_Resources
 CLEANFILES = *~ gdal.conf
 
 # Sample data primaries for install
-sample_datadir = 		$(datadir)/hyrax/data/gdal
+sample_datadir = $(datadir)/hyrax/data/gdal
 sample_data_DATA =
 
 install-data-local: gdal.conf

@@ -71,7 +71,7 @@ AC_CHECK_BES([3.9.0],
 
 GDAL_FOUND=
 
-AC_ARG_WITH(gdal,[  --with-gdal=PFX   Prefix where gdal is installed (optional).],
+AC_ARG_WITH(gdal,[ AS_HELP_STRING ([--with-gdal], [Use the copy of GDAL at this location]) ],
             with_gdal_prefix="$withval", with_gdal_prefix="")
 
 if test -n "$with_gdal_prefix" -a -x $with_gdal_prefix/bin/gdal-config
@@ -85,10 +85,31 @@ then
     AC_MSG_ERROR([You set the gdal-prefix directory to $with_gdal_prefix, but gdal-config is not there.])
 fi
 
+AC_ARG_ENABLE(local-gdal, [ AS_HELP_STRING ([--enable_local-gdal], [Build and use the local copy of GDAL]) ])
+
+AC_MSG_NOTICE([enable_local_gdal: >$enable_local_gdal<])
+if test -n "$enable_local_gdal" -a "$enable_local_gdal" = "yes"
+then
+    AC_MSG_NOTICE([Building the local GDAL library.])
+    gdal_prx=`pwd`/gdal-1.9.1/build
+    if (cd gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared && make -j9 && make install)
+    then
+        GDAL_LDFLAGS="`$gdal_prx/bin/gdal-config --libs`"
+        GDAL_CFLAGS="`$gdal_prx/bin/gdal-config --cflags`"
+        AC_SUBST([GDAL_LDFLAGS])
+        AC_SUBST([GDAL_CFLAGS])
+        GDAL_FOUND="yes"
+    
+        # AC_MSG_NOTICE(["GDAL_LDFLAGS status >$GDAL_LDFLAGS<"])
+        # AC_MSG_NOTICE(["GDAL_CFLAGS status >$GDAL_CFLAGS<"])
+    else
+        AC_MSG_ERROR([I could not build GDAL.])
+    fi
+fi
+
 if test -z "$GDAL_FOUND"
 then
     AX_LIB_GDAL([1.7.2])
-    GDAL_FOUND="no"
     if test ! -z "$GDAL_CFLAGS" -a ! -z "$GDAL_LDFLAGS"; then
         GDAL_FOUND="yes"
     fi
@@ -127,7 +148,4 @@ AC_CONFIG_FILES([tests/generate_metadata_baseline.sh], [chmod +x tests/generate_
 AC_CONFIG_FILES([tests/generate_data_baseline.sh], [chmod +x tests/generate_data_baseline.sh])
 
 AC_OUTPUT
-
-         
-        
 

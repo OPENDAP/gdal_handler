@@ -35,7 +35,6 @@
 #include <ResponseBuilder.h>
 #include <debug.h>
 
-//#include "GDAL_DDS.h"
 #include "GDALTypes.h"
 
 extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);

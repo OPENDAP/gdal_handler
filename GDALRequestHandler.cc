@@ -58,15 +58,17 @@
 #define GDAL_NAME "gdal"
 
 using namespace libdap;
-
+#if 0
 bool GDALRequestHandler::_show_shared_dims = false;
 bool GDALRequestHandler::_show_shared_dims_set = false;
 bool GDALRequestHandler::_ignore_unknown_types = false;
 bool GDALRequestHandler::_ignore_unknown_types_set = false;
+#endif
 
 extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
 extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);
 
+#if 0
 /** Is the version number string greater than or equal to the value.
  * @note Works only for versions with zero or one dot. If the conversion of
  * the string to a float fails for any reason, this returns false.
@@ -86,6 +88,7 @@ static bool version_ge(const string &version, float value)
         return false;
     }
 }
+#endif
 
 GDALRequestHandler::GDALRequestHandler(const string &name) :
     BESRequestHandler(name)
@@ -96,6 +99,8 @@ GDALRequestHandler::GDALRequestHandler(const string &name) :
     add_handler(HELP_RESPONSE, GDALRequestHandler::gdal_build_help);
     add_handler(VERS_RESPONSE, GDALRequestHandler::gdal_build_version);
 
+#if 0
+    // See comments in the header about these... jhrg
     if (GDALRequestHandler::_show_shared_dims_set == false) {
         bool key_found = false, context_found = false;
         // string key = "GDAL.ShowSharedDimensions";
@@ -145,6 +150,7 @@ GDALRequestHandler::GDALRequestHandler(const string &name) :
 
         GDALRequestHandler::_ignore_unknown_types_set = true;
     }
+#endif
 }
 
 GDALRequestHandler::~GDALRequestHandler()
