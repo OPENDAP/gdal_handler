@@ -69,6 +69,7 @@ AC_CHECK_BES([3.9.0],
 [ AC_MSG_ERROR([Could not find expected version of bes library and headers])
 ])
 
+# Which copy of GDAL should be used for the build?
 GDAL_FOUND=
 
 AC_ARG_WITH(gdal,[ AS_HELP_STRING ([--with-gdal], [Use the copy of GDAL at this location]) ],
@@ -85,17 +86,29 @@ then
     AC_MSG_ERROR([You set the gdal-prefix directory to $with_gdal_prefix, but gdal-config is not there.])
 fi
 
-AC_ARG_ENABLE(local-gdal, [ AS_HELP_STRING ([--enable_local-gdal], [Build and use the local copy of GDAL]) ])
+AC_ARG_ENABLE(local-gdal, [ AS_HELP_STRING ([--enable-local-gdal], [Build and use the local copy of GDAL]) ])
 
-AC_MSG_NOTICE([enable_local_gdal: >$enable_local_gdal<])
+# if we are going to build our own copy of GDAL and the JASPER JPEG2000 library
+# was built, be sure to include it here, too.
 if test -n "$enable_local_gdal" -a "$enable_local_gdal" = "yes"
 then
     AC_MSG_NOTICE([Building the local GDAL library.])
-    gdal_prx=`pwd`/gdal-1.9.1/build
-    if (cd gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared && make -j9 && make install)
+    jasper=
+    if test "$JASPER_FOUND" = "yes"
     then
-        GDAL_LDFLAGS="`$gdal_prx/bin/gdal-config --libs`"
-        GDAL_CFLAGS="`$gdal_prx/bin/gdal-config --cflags`"
+        AC_MSG_NOTICE([Building JASPER support in the GDAL library.])
+        if test -n "$with_jasper_prefix"
+        then
+            jasper="--with-jasper=$with_jasper_prefix"
+        else
+           jasper="--with-jasper=jasper-1.900.1/build"
+        fi
+    fi
+    gdal_prx=`pwd`/gdal-1.9.1/build
+    if (cd gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared $jasper && make -j9 && make install)
+    then
+        GDAL_LDFLAGS="-Lgdal-1.9.1/build/lib -lgdal"
+        GDAL_CFLAGS="-Igdal-1.9.1/build/include"
         AC_SUBST([GDAL_LDFLAGS])
         AC_SUBST([GDAL_CFLAGS])
         GDAL_FOUND="yes"
