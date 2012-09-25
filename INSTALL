@@ -1,0 +1,26 @@
+
+Updated for version 0.9.0 on 25 Sept. 2012
+
+To build the gdal handler, follow the usual prescription of running 
+./configure followed by make and make install.
+
+This handler uses the GDAL library to access several different types
+of data files: GeoTIFF, GRiB and JPEG2000. The build also
+supports access to data in SQLite and Postgres, although that has not
+been tested.
+
+To build the handler so that it uses a copy of GDAL already installed
+on the host computer, simply run ./configure. It will use configure's
+normal rules to find a copy of the library installed in a standard 
+location. To build the handler so that it uses a particular copy of
+GDAL, use the --with-gdal=PATH option to ./configure, where PATH is
+the pathname where GDAL is/was installed.
+
+The handler can also be built so that it uses its own copy of the 
+GDAL library. To do this, use the --enable-local-gdal option. When
+this is used, a local copy of GDAL will be built *when ./configure 
+is run* which is a little different than the normal build order, but
+ensure that the GDAL library is completely built before the handler
+software. When this option is used, the GDAL library is configured
+so as to build only its static version and is installed in the 
+gdal-<version>/build subdirectory.

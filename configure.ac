@@ -72,7 +72,7 @@ AC_CHECK_BES([3.9.0],
 # Which copy of GDAL should be used for the build?
 GDAL_FOUND=
 
-AC_ARG_WITH(gdal,[ AS_HELP_STRING ([--with-gdal], [Use the copy of GDAL at this location]) ],
+AC_ARG_WITH(gdal, AS_HELP_STRING([--with-gdal], [Use the copy of GDAL at this location]),
             with_gdal_prefix="$withval", with_gdal_prefix="")
 
 if test -n "$with_gdal_prefix" -a -x $with_gdal_prefix/bin/gdal-config
@@ -86,7 +86,7 @@ then
     AC_MSG_ERROR([You set the gdal-prefix directory to $with_gdal_prefix, but gdal-config is not there.])
 fi
 
-AC_ARG_ENABLE(local-gdal, [ AS_HELP_STRING ([--enable-local-gdal], [Build and use the local copy of GDAL]) ])
+AC_ARG_ENABLE(local-gdal, AS_HELP_STRING([--enable-local-gdal], [Build and use the local copy of GDAL]) )
 
 # if we are going to build our own copy of GDAL and the JASPER JPEG2000 library
 # was built, be sure to include it here, too.

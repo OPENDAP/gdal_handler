@@ -1,0 +1,5 @@
+
+Updated for version 0.9.0 on 25 Sept. 2012
+
+This is the initial release of a handler to read GeoTIFF,
+GRiB and JPEG2000 files.

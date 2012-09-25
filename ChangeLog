@@ -1,0 +1,239 @@
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Added GRiB and JPEG2000 files to data dir; torqued around the
+	build a bit more.
+
+	M    gdal.conf.in
+	M    configure.ac
+	AM   data/EastAtlantic.wind.grb.bz2
+	AM   data/goldenears.jpg
+	AM   data/Atlantic.wind.grb.bz2
+	AM   data/goldenears_gray.jpg
+	AM   data/Caribbean.wind.grb.bz2
+	AM   data/CentralAtlantic.wind.grb.bz2
+	M    Makefile.am
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Added gdal-1.9.1 for the 'local' API option.
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Tests cleaned...
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Changes to the build to support a local copy of GDAL.
+
+2012-08-01  James Gallagher <jgallagher@opendap.org>
+
+	Update of the tests directory - now it has a test
+	program (tests/testsuite) that can also generate baselines for
+	given bescmd files. look at the --generate and --generate-data
+	options (--help)
+
+2012-08-01  James Gallagher <jgallagher@opendap.org>
+
+	old test files - kept for posterity's sake
+
+2012-08-01  James Gallagher <jgallagher@opendap.org>
+
+	single set of test driver files and their baselines
+
+2012-08-01  James Gallagher <jgallagher@opendap.org>
+
+	Added an 'old' directory for files I'd like to keep but not have
+	people use.
+
+2012-07-30  James Gallagher <jgallagher@opendap.org>
+
+	Found and fixed an error in bes.conf.in.
+
+	M    tests/bes.conf.in
+
+2012-07-27  James Gallagher <jgallagher@opendap.org>
+
+	more svn nonsense
+
+2012-07-27  James Gallagher <jgallagher@opendap.org>
+
+	Changed the name of the shared object library so it's called
+	libgdal_module.so like all the other modules (it was also called
+	that in the gdal.conf file that was installed by default).
+
+2012-07-27  James Gallagher <jgallagher@opendap.org>
+
+	Maybe now, with the previously hidden files ignored, the SVN stuff
+	will appear correctly in Eclipse
+
+2012-07-27  James Gallagher <jgallagher@opendap.org>
+
+	Set svn ignore on many files in an attempt to get Eclipse to show
+	modification status correctly.
+
+2012-07-27  James Gallagher <jgallagher@opendap.org>
+
+	ignored files...
+
+2012-07-26  James Gallagher <jgallagher@opendap.org>
+
+	Hack that might fix the dataset name problem - made at home and
+	the new BES hacks this handler needs are not in SVN yet...
+
+2012-07-26  James Gallagher <jgallagher@opendap.org>
+
+	fixed leaking resource problem: The handler depended on being able
+	to keep the file open when accessing data (this was OK in the
+	original version because the handler was a CGI and the file was
+	closed each time the handler/program exited). I subclassed DataDDS
+	so that the open GDAL handler for the dataset is closed using the
+	DataDDS (really GDALDDS) destructor. I fixed a slew of memory
+	leaks in the old code, and in the process, found a bug in libdap.
+	This handler requires libdap >= 3.12.0
+
+2012-07-25  brent
+
+	Changes to the Grid constructor to allow the Grid to open and
+	close the input itself. Fails in DODS case
+
+2012-06-24  James Gallagher <jgallagher@opendap.org>
+
+	Some minor changes like adding #define DODS_DEBUG and then
+	commenting it out. The only substantial changes are to GDALGrid
+	where I fixed the signature of read() and added my own impls of
+	the copy ctor and operator=. Changing the type signature of read()
+	fixed the bug that was making the data requests barf.
+
+2012-06-22  James Gallagher <jgallagher@opendap.org>
+
+	Changes made during some debugging work. Added instrumentation and
+	hacked up some stuff in tests, data directories. It seems that
+	there is a 'slicing' bug in the code when instances of GDDALGrid
+	are added to the DDS object, although I do not where/how this is
+	happening.
+
+2012-06-21  James Gallagher <jgallagher@opendap.org>
+
+	Changes to the bes.conf.in file plus some new tests (bescmd
+	scripts in tests/gdal).
+
+2012-06-20  James Gallagher <jgallagher@opendap.org>
+
+	Hacked bes.conf.in and Makefile.am here in tests so that they work.
+
+2012-06-20  James Gallagher <jgallagher@opendap.org>
+
+	Added some test data.
+
+2012-05-03  brent
+
+	configuration and source for geotiff files. dods dataset part not
+	working. dds, ddx, das working.
+
+2012-01-17  James Gallagher <jgallagher@opendap.org>
+
+	Added, hopefully correctly this time.
+
+	A    conf
+	A    conf/ax_path_generic.m4
+	A    conf/pkg.m4
+	A    conf/ax_compare_version.m4
+	A    conf/ax_lib_gdal.m4
+	A    conf/acinclude.m4
+	A    conf/bes.m4
+	A    conf/libdap.m4
+
+2012-01-17  James Gallagher <jgallagher@opendap.org>
+
+	More hacks; now builds and includes all parts of a BES handler.
+	Fixed the exec property (should be off for all of these files).
+
+	_M   GDALTypes.cc
+	_M   gdal_das.cc
+	_M   GDALTypes.h
+	MM   gdal_dds.cc
+	_M   conf
+	_M   GDALArray.cc
+	_M   gdal_types.cc.old
+	_M   gdal_handler.spec
+	_M   README
+	_M   Makefile.in.old
+	_M   gdal.conf.in
+	_M   GDALModule.cc
+	_M   GDALGrid.cc
+	_M   tests
+	A    tests/package.m4.in
+	M    tests/generate_bescmd.sh
+	A    tests/bes.conf.in
+	M    tests/Makefile.am
+	M    tests/testsuite.at
+	A    tests/template.bescmd.in
+	_M   GDALRequestHandler.cc
+	_M   configure.in.old
+	MM   configure.ac
+	_M   GDALModule.h
+	_M   GDALRequestHandler.h
+	_M   INSTALL
+	_M   COPYING
+	MM   Makefile.am
+	_M   NEWS
+
+2012-01-12  James Gallagher <jgallagher@opendap.org>
+
+	Now it's a BES handler...
+
+2012-01-12  James Gallagher <jgallagher@opendap.org>
+
+	Hacked in the old code to build a DDS. It's not elegant, but it
+	should work.
+
+2012-01-12  James Gallagher <jgallagher@opendap.org>
+
+	Fixed build, added copyrights, otherwise normalized; almost a BES
+	handler.
+
+2012-01-12  James Gallagher <jgallagher@opendap.org>
+
+	clean up from botched add of 'conf'
+
+2012-01-12  James Gallagher <jgallagher@opendap.org>
+
+	Moving to Hyrax/BES from Server3
+
+2012-01-12  James Gallagher <jgallagher@opendap.org>
+
+	Moving to Hyrax/BES from Server3
+
+2008-02-02  Patrick West <pwest@ucar.edu>
+
+	Added using namespace libdap where needed
+	M    gdal_types.cc
+	M    GDALTypes.cc
+	M    GDALTypes.h
+	M    GDALArray.cc
+
+2005-11-04  James Gallagher <jgallagher@opendap.org>
+
+	Moved up
+
+2005-08-08  root
+
+	Auto reset of Subversion properties
+
+2005-07-05  Rob Morris <Robert.O.Morris@jpl.nasa.gov>
+
+	Set eol-style to native on all text file in the trunk
+
+2004-12-02  Dan Holloway <dholloway@opendap.org>
+
+	Fixed problem in Map Vector response, previously all values returned
+	would be the same.
+
+2004-10-19  warmerda
+
+	New
+
+2004-10-04  warmerda
+
+	New
+
