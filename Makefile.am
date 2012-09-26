@@ -44,11 +44,9 @@ EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec data OSX_Resources gdal-1.9.
 
 CLEANFILES = *~ gdal.conf
 
+# distclean is supposed to remove everything built by make or configure
 distclean-local:
-	cd gdal-1.9.1 && make distclean
-
-clean-local:
-	cd gdal-1.9.1 && make clean
+	cd gdal-1.9.1 && make distclean && rm -rf build
 
 # Sample data primaries for install
 sample_datadir = $(datadir)/hyrax/data/gdal
@@ -68,8 +66,10 @@ gdal.conf: gdal.conf.in config.status
 	sed -e "s%[@]bes_modules_dir[@]%${lib_besdir}%" $< > gdal.conf
 
 # Not nearly as clean as it could be, but this removes .svn directories
-# in subdirs.
+# in subdirs. This also cleans out the gdal library's binaries, without
+# removing them from the 'real' directory
 dist-hook:
+	(cd $(top_distdir)/gdal-1.9.1 && make clean && rm -rf build)
 	rm -rf `find $(distdir) -name .svn`
 
 .PHONY: docs
