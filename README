@@ -1,4 +1,11 @@
 
+Updated for version 0.9.1
+
+This is build fix.
+
+Note that JP2 files will need gdal 1.9.1 built with Jasper and jpeg-8d. 
+I have not included the Jasper in the gdal-1.9.1 directory.
+
 Updated for version 0.9.0 on 25 Sept. 2012
 
 This is the initial release of a handler to read GeoTIFF,
