@@ -93,17 +93,6 @@ AC_ARG_ENABLE(local-gdal, AS_HELP_STRING([--enable-local-gdal], [Build and use t
 if test -n "$enable_local_gdal" -a "$enable_local_gdal" = "yes"
 then
     AC_MSG_NOTICE([Building the local GDAL library.])
-    jasper=
-    if test "$JASPER_FOUND" = "yes"
-    then
-        AC_MSG_NOTICE([Building JASPER support in the GDAL library.])
-        if test -n "$with_jasper_prefix"
-        then
-            jasper="--with-jasper=$with_jasper_prefix"
-        else
-           jasper="--with-jasper=jasper-1.900.1/build"
-        fi
-    fi
     gdal_prx=`pwd`/gdal-1.9.1/build
     if (cd gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared $jasper && make -j9 && make install)
     then
