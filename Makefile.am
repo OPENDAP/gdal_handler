@@ -27,7 +27,12 @@ endif
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libgdal_module.la
 
-SUBDIRS = . tests
+# It's a bit of a misnomer... Maybe in a while we will jasper...
+if LOCAL_GDAL
+    GDAL = third_party
+endif
+
+SUBDIRS = $(GDAL) . tests
 
 GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc GDALArray.cc \
 	GDALGrid.cc  GDALTypes.cc gdal_das.cc gdal_dds.cc
@@ -41,13 +46,17 @@ libgdal_module_la_LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
 
 EXTRA_PROGRAMS = 
 
-EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec data OSX_Resources gdal-1.9.1
+EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec \
+	data OSX_Resources third_party
+
+# Not nearly as clean as it could be, but this removes .svn directories
+# in subdirs. This also cleans out the gdal library's binaries, without
+# removing them from the 'real' directory
+dist-hook:
+	(cd $(top_distdir)/third_party/gdal-1.9.1 && make clean && rm -rf build)
+	rm -rf `find $(distdir) -name .svn`
 
 CLEANFILES = *~ gdal.conf
-
-# distclean is supposed to remove everything built by make or configure
-distclean-local:
-	cd gdal-1.9.1 && make distclean && rm -rf build
 
 # Sample data primaries for install
 sample_datadir = $(datadir)/hyrax/data/gdal
@@ -65,13 +74,6 @@ uninstall-local:
 
 gdal.conf: gdal.conf.in config.status
 	sed -e "s%[@]bes_modules_dir[@]%${lib_besdir}%" $< > gdal.conf
-
-# Not nearly as clean as it could be, but this removes .svn directories
-# in subdirs. This also cleans out the gdal library's binaries, without
-# removing them from the 'real' directory
-dist-hook:
-	(cd $(top_distdir)/gdal-1.9.1 && make clean && rm -rf build)
-	rm -rf `find $(distdir) -name .svn`
 
 .PHONY: docs
 docs:

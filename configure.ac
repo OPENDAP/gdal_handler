@@ -88,16 +88,19 @@ fi
 
 AC_ARG_ENABLE(local-gdal, AS_HELP_STRING([--enable-local-gdal], [Build and use the local copy of GDAL]) )
 
-# if we are going to build our own copy of GDAL and the JASPER JPEG2000 library
-# was built, be sure to include it here, too.
 if test -n "$enable_local_gdal" -a "$enable_local_gdal" = "yes"
 then
     AC_MSG_NOTICE([Building the local GDAL library.])
-    gdal_prx=`pwd`/gdal-1.9.1/build
-    if (cd gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared $jasper && make -j9 && make install)
+    AM_CONDITIONAL(LOCAL_GDAL, true)
+
+    # configure bundled gdal here; the Makefile in third_party forces
+    # install to be run for the 'all' target there, so this lib will
+    # install in the prefix defined below
+    gdal_prx=`pwd`/third_party/gdal-1.9.1/build
+    if (cd third_party/gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared)
     then
-        GDAL_LDFLAGS="-Lgdal-1.9.1/build/lib -lgdal"
-        GDAL_CFLAGS="-Igdal-1.9.1/build/include"
+        GDAL_LDFLAGS="-Lthird_party/gdal-1.9.1/build/lib -lgdal"
+        GDAL_CFLAGS="-Ithird_party/gdal-1.9.1/build/include"
         AC_SUBST([GDAL_LDFLAGS])
         AC_SUBST([GDAL_CFLAGS])
         GDAL_FOUND="yes"
@@ -148,6 +151,8 @@ AC_CONFIG_FILES([Makefile tests/Makefile tests/atlocal tests/package.m4])
 
 AC_CONFIG_FILES([tests/generate_metadata_baseline.sh], [chmod +x tests/generate_metadata_baseline.sh])
 AC_CONFIG_FILES([tests/generate_data_baseline.sh], [chmod +x tests/generate_data_baseline.sh])
+
+AC_CONFIG_FILES([third_party/Makefile])
 
 AC_OUTPUT
 
