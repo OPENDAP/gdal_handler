@@ -29,4 +29,4 @@ BES.module.gdal=@bes_modules_dir@/libgdal_module.so
 
 # Read GeoTiff files, GRiB files and JPEG2000 files.
 
-BES.Catalog.catalog.TypeMatch+=gdal:.*\.(tif|TIF)$|.*\.grb\.(bz2|gz|Z)?$|.*\.jp2$|.*/gdal/.*\.jpg$;
+BES.Catalog.catalog.TypeMatch+=gdal:.*\.(tif|TIF)$|.*\.(grb)(\.bz2|\.gz|\.Z)?$|.*\.jp2$|.*/gdal/.*\.jpg$;

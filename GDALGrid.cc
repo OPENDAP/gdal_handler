@@ -172,7 +172,7 @@ GDALGrid::read()
 /*      georeferencing maps.                                            */
 /* -------------------------------------------------------------------- */
 
-    // Move this into the gdal_dds.cc code so that it store this in the
+    // Move this into the gdal_dds.cc code so that it stores this in the
     // Grid or maybe in the GDALDDS instance? Then we can avoid a second
     // open/read operation on the file. jhrg
     GDALDatasetH hDS;

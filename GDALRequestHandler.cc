@@ -157,6 +157,22 @@ GDALRequestHandler::~GDALRequestHandler()
 {
 }
 
+/** If there appears to be a pathname in the error message, remove all of the
+ * text except for the filename. There is a util function in libdap
+ * for this, but it only knows how to chop off leading characters.
+ * In this case the pathname is embedded in an error message that
+ * should be preserved.
+ */
+static string sanitize(string msg)
+{
+    string::size_type first = msg.find("/");
+    string::size_type last = msg.find_last_of("/");
+    if (first == string::npos || last == string::npos)
+        return msg;
+    else
+        return msg.erase(first, last-first+1);
+}
+
 bool GDALRequestHandler::gdal_build_das(BESDataHandlerInterface & dhi)
 {
     BESResponseObject *response = dhi.response_handler->get_response_object();
@@ -175,10 +191,10 @@ bool GDALRequestHandler::gdal_build_das(BESDataHandlerInterface & dhi)
         throw;
     }
     catch (InternalErr & e) {
-        throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+        throw BESDapError(sanitize(e.get_error_message()), true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-        throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+        throw BESDapError(sanitize(e.get_error_message()), false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
         throw BESInternalFatalError("unknown exception caught building DAS", __FILE__, __LINE__);
@@ -224,10 +240,10 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
         throw;
     }
     catch (InternalErr & e) {
-        throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+        throw BESDapError(sanitize(e.get_error_message()), true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-        throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+        throw BESDapError(sanitize(e.get_error_message()), false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
         throw BESInternalFatalError("unknown exception caught building DDS", __FILE__, __LINE__);
@@ -293,10 +309,10 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
         throw;
     }
     catch (InternalErr & e) {
-        throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+        throw BESDapError(sanitize(e.get_error_message()), true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-        throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+        throw BESDapError(sanitize(e.get_error_message()), false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
         throw BESInternalFatalError("unknown exception caught building DAS", __FILE__, __LINE__);

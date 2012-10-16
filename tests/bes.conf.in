@@ -106,7 +106,7 @@ BES.Data.RootDirectory=/dev/null
 # 'hdf', 'HDF' or 'eos' which may also end in '.gz' or '.bz2'. In the latter
 # case the file will be treated as a compressed file.
 
-BES.Catalog.catalog.TypeMatch=gd:.*.(tif|TIF)(.bz2|.gz|.Z)?$;
+BES.Catalog.catalog.TypeMatch=gd:.*.(tif|TIF|jp2|grb|jpg)(.bz2|.gz|.Z)?$;
 
 # Normally, when a client asks for a data catalog, all files and directories
 # are shown. Use the following two parameters to customize this behavior.
