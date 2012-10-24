@@ -93,14 +93,15 @@ then
     AC_MSG_NOTICE([Building the local GDAL library.])
     AM_CONDITIONAL(LOCAL_GDAL, true)
 
-    # configure bundled gdal here; the Makefile in third_party forces
+    # configure bundled gdal here; the Makefile in deps forces
     # install to be run for the 'all' target there, so this lib will
-    # install in the prefix defined below
-    gdal_prx=`pwd`/third_party/gdal-1.9.1/build
-    if (cd third_party/gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared)
+    # install in the prefix defined below.
+    # Added --with-pic for Linux (CentOS 6). jhrg 10/16/12
+    gdal_prx=`pwd`/deps/gdal-1.9.1/build
+    if (cd deps/gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared --with-pic)
     then
-        GDAL_LDFLAGS="-Lthird_party/gdal-1.9.1/build/lib -lgdal"
-        GDAL_CFLAGS="-Ithird_party/gdal-1.9.1/build/include"
+        GDAL_LDFLAGS="-deps/gdal-1.9.1/build/lib -lgdal"
+        GDAL_CFLAGS="-Ideps/gdal-1.9.1/build/include"
         AC_SUBST([GDAL_LDFLAGS])
         AC_SUBST([GDAL_CFLAGS])
         GDAL_FOUND="yes"
@@ -110,6 +111,8 @@ then
     else
         AC_MSG_ERROR([I could not build GDAL.])
     fi
+else
+    AM_CONDITIONAL(LOCAL_GDAL, false)
 fi
 
 if test -z "$GDAL_FOUND"
@@ -152,7 +155,7 @@ AC_CONFIG_FILES([Makefile tests/Makefile tests/atlocal tests/package.m4])
 AC_CONFIG_FILES([tests/generate_metadata_baseline.sh], [chmod +x tests/generate_metadata_baseline.sh])
 AC_CONFIG_FILES([tests/generate_data_baseline.sh], [chmod +x tests/generate_data_baseline.sh])
 
-AC_CONFIG_FILES([third_party/Makefile])
+AC_CONFIG_FILES([deps/Makefile])
 
 AC_OUTPUT
 
