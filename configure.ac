@@ -155,7 +155,7 @@ AC_CONFIG_FILES([Makefile tests/Makefile tests/atlocal tests/package.m4])
 AC_CONFIG_FILES([tests/generate_metadata_baseline.sh], [chmod +x tests/generate_metadata_baseline.sh])
 AC_CONFIG_FILES([tests/generate_data_baseline.sh], [chmod +x tests/generate_data_baseline.sh])
 
-AC_CONFIG_FILES([deps/Makefile])
+AC_CONFIG_FILES([third_party/Makefile])
 
 AC_OUTPUT
 
