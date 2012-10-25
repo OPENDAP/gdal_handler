@@ -93,15 +93,15 @@ then
     AC_MSG_NOTICE([Building the local GDAL library.])
     AM_CONDITIONAL(LOCAL_GDAL, true)
 
-    # configure bundled gdal here; the Makefile in deps forces
+    # configure bundled gdal here; the Makefile in third_party forces
     # install to be run for the 'all' target there, so this lib will
     # install in the prefix defined below.
     # Added --with-pic for Linux (CentOS 6). jhrg 10/16/12
-    gdal_prx=`pwd`/deps/gdal-1.9.1/build
-    if (cd deps/gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared --with-pic)
+    gdal_prx=`pwd`/third_party/gdal-1.9.1/build
+    if (cd third_party/gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared --with-pic)
     then
-        GDAL_LDFLAGS="-deps/gdal-1.9.1/build/lib -lgdal"
-        GDAL_CFLAGS="-Ideps/gdal-1.9.1/build/include"
+        GDAL_LDFLAGS="-L third_party/gdal-1.9.1/build/lib -lgdal"
+        GDAL_CFLAGS="-I third_party/gdal-1.9.1/build/include"
         AC_SUBST([GDAL_LDFLAGS])
         AC_SUBST([GDAL_CFLAGS])
         GDAL_FOUND="yes"
