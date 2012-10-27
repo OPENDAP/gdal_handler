@@ -100,8 +100,8 @@ then
     gdal_prx=`pwd`/third_party/gdal-1.9.1/build
     if (cd third_party/gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared --with-pic)
     then
-        GDAL_LDFLAGS="-L third_party/gdal-1.9.1/build/lib -lgdal"
-        GDAL_CFLAGS="-I third_party/gdal-1.9.1/build/include"
+        GDAL_LDFLAGS="-Lthird_party/gdal-1.9.1/build/lib -lgdal"
+        GDAL_CFLAGS="-Ithird_party/gdal-1.9.1/build/include"
         AC_SUBST([GDAL_LDFLAGS])
         AC_SUBST([GDAL_CFLAGS])
         GDAL_FOUND="yes"
