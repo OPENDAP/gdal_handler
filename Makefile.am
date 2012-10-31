@@ -27,15 +27,10 @@ endif
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libgdal_module.la
 
-# It's a bit of a misnomer... Maybe in a while we will jasper...
-if LOCAL_GDAL
-    GDAL = third_party
-endif
+SUBDIRS = . tests
 
-SUBDIRS = $(GDAL) . tests
-
-GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc \
-	GDALGrid.cc  GDALTypes.cc gdal_das.cc gdal_dds.cc
+GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc GDALGrid.cc \
+	GDALTypes.cc gdal_das.cc gdal_dds.cc
 
 GDAL_HDRS = GDALModule.h GDALRequestHandler.h GDALTypes.h GDAL_DDS.h
 
@@ -46,14 +41,11 @@ libgdal_module_la_LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
 
 EXTRA_PROGRAMS = 
 
-EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec \
-	data OSX_Resources third_party
+EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec data OSX_Resources 
 
 # Not nearly as clean as it could be, but this removes .svn directories
-# in subdirs. This also cleans out the gdal library's binaries, without
-# removing them from the 'real' directory
+# in subdirs.
 dist-hook:
-	(cd $(top_distdir)/third_party/gdal-1.9.1 && make clean && rm -rf build)
 	rm -rf `find $(distdir) -name .svn`
 
 CLEANFILES = *~ gdal.conf

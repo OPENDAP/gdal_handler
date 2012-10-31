@@ -8,12 +8,10 @@ Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
 Requires:        libdap >= 3.11.0
 Requires:        bes >= 3.9.0
-# Requires:        libgdal >= 1.8
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:   libdap-devel >= 3.11.2
 BuildRequires:   bes-devel >= 3.9.1
-# BuildRequires:   libgdal-devel >= 1.8
 
 %description
 This is the GDAL handler for our data server. We hope it will serve any
@@ -42,10 +40,11 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %files
+%defattr(-,root,root,-)
 %dir %{_sysconfdir}/bes/
-%dir %{_sysconfdir}/bes/handlers
-%config(noreplace) %{_sysconfdir}/bes/handlers/gdal.conf
-%{_libdir}/bes/libgdal_handler.so
+%dir %{_sysconfdir}/bes/modules
+%config(noreplace) %{_sysconfdir}/bes/modules/gdal.conf
+%{_libdir}/bes/libgdal_module.so
 %{_datadir}/hyrax/
 %doc COPYING NEWS README
 
