@@ -34,7 +34,7 @@ endif
 
 SUBDIRS = $(GDAL) . tests
 
-GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc GDALArray.cc \
+GDAL_SRCS = GDALModule.cc GDALRequestHandler.cc \
 	GDALGrid.cc  GDALTypes.cc gdal_das.cc gdal_dds.cc
 
 GDAL_HDRS = GDALModule.h GDALRequestHandler.h GDALTypes.h GDAL_DDS.h

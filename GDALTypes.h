@@ -40,11 +40,6 @@ using namespace libdap ;
 /*                               GDALByte                               */
 /************************************************************************/
 
-#if 0
-extern Byte * NewByte(const string &n = "");
-#endif
-
-
 class GDALByte: public Byte {
 public:
     GDALByte(const string &n = "");
@@ -58,11 +53,6 @@ public:
 /************************************************************************/
 /*                              GDALUInt16                              */
 /************************************************************************/
-
-#if 0
-extern UInt16 * NewUInt16(const string &n = "");
-#endif
-
 
 class GDALUInt16: public UInt16 {
 public:
@@ -78,11 +68,6 @@ public:
 /*                              GDALInt16                               */
 /************************************************************************/
 
-#if 0
-extern Int16 * NewInt16(const string &n = "");
-#endif
-
-
 class GDALInt16: public Int16 {
 public:
     GDALInt16(const string &n = "");
@@ -96,11 +81,6 @@ public:
 /************************************************************************/
 /*                              GDALUInt32                               */
 /************************************************************************/
-
-#if 0
-extern UInt32 * NewUInt32(const string &n = "");
-#endif
-
 
 class GDALUInt32: public UInt32 {
 public:
@@ -116,11 +96,6 @@ public:
 /*                              GDALInt32                               */
 /************************************************************************/
 
-#if 0
-extern Int32 * NewInt32(const string &n = "");
-#endif
-
-
 class GDALInt32: public Int32 {
 public:
     GDALInt32(const string &n = "");
@@ -134,11 +109,6 @@ public:
 /************************************************************************/
 /*                             GDALFloat32                              */
 /************************************************************************/
-
-#if 0
-extern Float32 * NewFloat32(const string &n = "");
-#endif
-
 
 class GDALFloat32: public Float32 {
 public:
@@ -154,11 +124,6 @@ public:
 /*                             GDALFloat64                              */
 /************************************************************************/
 
-#if 0
-extern Float64 * NewFloat64(const string &n = "");
-#endif
-
-
 class GDALFloat64: public Float64 {
 public:
     GDALFloat64(const string &n = "");
@@ -173,15 +138,10 @@ public:
 /*                              GDALArray                               */
 /************************************************************************/
 
-#if 0
-extern Array * NewArray(const string &n , BaseType *v);
-#endif
-
-
 class GDALArray: public Array {
 public:
     GDALArray(const string &n = "", BaseType *v = 0);
-    virtual ~GDALArray();
+    virtual ~GDALArray() {}
 
     virtual BaseType *ptr_duplicate();
 

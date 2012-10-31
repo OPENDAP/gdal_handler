@@ -33,6 +33,7 @@
 #include <DDS.h>
 #include <DAS.h>
 #include <ResponseBuilder.h>
+#include <GNURegex.h>
 #include <debug.h>
 
 #include "GDALTypes.h"
@@ -70,15 +71,18 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
         DBG(cerr << "In dgal_dds.cc  iBand" << endl);
 
         GDALRasterBandH hBand = GDALGetRasterBand( hDS, iBand+1 );
-#if 0
-        //BaseType *bt;
-        // TODO ostringstream
-        char szName[32];
-        // nsprintf if not ostringstream
-        sprintf( szName, "band_%d", iBand+1 );
-#endif
-        ostringstream oss;
-        oss << "band_" << iBand+1;
+        ostringstream oss;      // Put the name here
+        // TODO change the band name depending on file type and metadata
+        Regex grib_file(".*\\.grb(.bz2)?");
+        if (grib_file.match(filename.c_str(), filename.length())) {
+            // Get the attribute
+            // process the attribute value to make a name
+            // oss << name plus the band #
+            oss << "GRIB_" << iBand+1;
+        }
+        else {
+            oss << "band_" << iBand+1;
+        }
 
         eBufType = GDALGetRasterDataType( hBand );
 

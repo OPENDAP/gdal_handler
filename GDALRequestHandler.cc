@@ -42,17 +42,19 @@
 #include <BESDDSResponse.h>
 #include <BESDataDDSResponse.h>
 #include <BESVersionInfo.h>
-#include <InternalErr.h>
 #include <BESDapError.h>
 #include <BESInternalFatalError.h>
 #include <BESDataNames.h>
 #include <TheBESKeys.h>
 #include <BESUtil.h>
-#include <Ancillary.h>
+
 #include <BESServiceRegistry.h>
-#include <BESUtil.h>
+// #include <BESUtil.h>
 #include <BESContextManager.h>
 
+#include <InternalErr.h>
+#include <Ancillary.h>
+#include <mime_util.h>
 #include <debug.h>
 
 #define GDAL_NAME "gdal"
@@ -67,28 +69,6 @@ bool GDALRequestHandler::_ignore_unknown_types_set = false;
 
 extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
 extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);
-
-#if 0
-/** Is the version number string greater than or equal to the value.
- * @note Works only for versions with zero or one dot. If the conversion of
- * the string to a float fails for any reason, this returns false.
- * @param version The string value (e.g., 3.2)
- * @param value A floating point value.
- */
-static bool version_ge(const string &version, float value)
-{
-    try {
-        float v;
-        istringstream iss(version);
-        iss >> v;
-
-        return (v >= value);
-    }
-    catch (...) {
-        return false;
-    }
-}
-#endif
 
 GDALRequestHandler::GDALRequestHandler(const string &name) :
     BESRequestHandler(name)
@@ -218,7 +198,7 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
 
         string filename = dhi.container->access();
         dds->filename(filename);
-        dds->set_dataset_name(filename.substr(filename.find_last_of('/') + 1));
+        dds->set_dataset_name(name_path(filename));
 
         // Here the handler does not need the open dataset handle, so
         // it closes it right away.

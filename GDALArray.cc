@@ -38,7 +38,7 @@ using namespace libdap ;
 /*                              GDALArray                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
+
 Array *
 NewArray(const string &n, BaseType *v)
 {
@@ -47,7 +47,7 @@ NewArray(const string &n, BaseType *v)
     return new GDALArray(n, v);
 }
 #endif
-
+#if 0
 BaseType *
 GDALArray::ptr_duplicate()
 {
@@ -70,6 +70,7 @@ GDALArray::read(const string &)
 
     if (read_p())
         return false;
+
     throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 

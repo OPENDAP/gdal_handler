@@ -34,13 +34,6 @@ using namespace libdap ;
 /*                               GDALByte                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Byte *
-NewByte(const string &n)
-{
-    return new GDALByte(n);
-}
-#endif
 
 GDALByte::GDALByte(const string &n) : Byte(n)
 {
@@ -63,13 +56,7 @@ GDALByte::read(const string &)
 /*                               GDALUInt16                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-UInt16 *
-NewUInt16(const string &n)
-{
-    return new GDALUInt16(n);
-}
-#endif
+
 GDALUInt16::GDALUInt16(const string &n) : UInt16(n)
 {
 }
@@ -91,13 +78,7 @@ GDALUInt16::read(const string &)
 /*                               GDALInt16                              */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Int16 *
-NewInt16(const string &n)
-{
-    return new GDALInt16(n);
-}
-#endif
+
 GDALInt16::GDALInt16(const string &n) : Int16(n)
 {
 }
@@ -119,13 +100,7 @@ GDALInt16::read(const string &)
 /*                               GDALUInt32                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-UInt32 *
-NewUInt32(const string &n)
-{
-    return new GDALUInt32(n);
-}
-#endif
+
 GDALUInt32::GDALUInt32(const string &n) : UInt32(n)
 {
 }
@@ -147,13 +122,7 @@ GDALUInt32::read(const string &)
 /*                               GDALInt32                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Int32 *
-NewInt32(const string &n)
-{
-    return new GDALInt32(n);
-}
-#endif
+
 GDALInt32::GDALInt32(const string &n) : Int32(n)
 {
 }
@@ -175,13 +144,7 @@ GDALInt32::read(const string &)
 /*                              GDALFloat32                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Float32 *
-NewFloat32(const string &n)
-{
-    return new GDALFloat32(n);
-}
-#endif
+
 GDALFloat32::GDALFloat32(const string &n) : Float32(n)
 {
 }
@@ -203,13 +166,7 @@ GDALFloat32::read(const string &)
 /*                              GDALFloat64                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Float64 *
-NewFloat64(const string &n)
-{
-    return new GDALFloat64(n);
-}
-#endif
+
 GDALFloat64::GDALFloat64(const string &n) : Float64(n)
 {
 }
@@ -226,10 +183,24 @@ GDALFloat64::read(const string &)
   throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
-// $Log: GDALTypes.cc,v $
-// Revision 1.1  2004/10/19 20:38:28  warmerda
-// New
-//
-// Revision 1.1  2004/10/04 14:29:29  warmerda
-// New
-//
+/************************************************************************/
+/* ==================================================================== */
+/*                              GDALArray                               */
+/* ==================================================================== */
+/************************************************************************/
+
+GDALArray::GDALArray(const string &n, BaseType *v) : Array(n, v)
+{
+}
+
+BaseType *
+GDALArray::ptr_duplicate()
+{
+    return new GDALArray(*this);
+}
+
+bool
+GDALArray::read(const string &)
+{
+    throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+}
