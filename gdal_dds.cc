@@ -71,7 +71,9 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
         DBG(cerr << "In dgal_dds.cc  iBand" << endl);
 
         GDALRasterBandH hBand = GDALGetRasterBand( hDS, iBand+1 );
+
         ostringstream oss;      // Put the name here
+#if 0
         // TODO change the band name depending on file type and metadata
         Regex grib_file(".*\\.grb(.bz2)?");
         if (grib_file.match(filename.c_str(), filename.length())) {
@@ -83,7 +85,8 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
         else {
             oss << "band_" << iBand+1;
         }
-
+#endif
+        oss << "band_" << iBand+1;
         eBufType = GDALGetRasterDataType( hBand );
 
         BaseType *bt;
