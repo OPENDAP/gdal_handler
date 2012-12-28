@@ -60,12 +60,6 @@
 #define GDAL_NAME "gdal"
 
 using namespace libdap;
-#if 0
-bool GDALRequestHandler::_show_shared_dims = false;
-bool GDALRequestHandler::_show_shared_dims_set = false;
-bool GDALRequestHandler::_ignore_unknown_types = false;
-bool GDALRequestHandler::_ignore_unknown_types_set = false;
-#endif
 
 extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
 extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);

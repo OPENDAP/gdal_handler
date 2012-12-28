@@ -35,13 +35,6 @@
 
 class GDALRequestHandler : public BESRequestHandler {
 private:
-#if 0
-    static bool		_show_shared_dims ;
-    static bool		_show_shared_dims_set ;
-
-    static bool     _ignore_unknown_types ;
-    static bool     _ignore_unknown_types_set ;
-#endif
 public:
 	GDALRequestHandler( const string &name ) ;
     virtual	~GDALRequestHandler( void ) ;
@@ -51,13 +44,6 @@ public:
     static bool	gdal_build_data( BESDataHandlerInterface &dhi ) ;
     static bool	gdal_build_help( BESDataHandlerInterface &dhi ) ;
     static bool	gdal_build_version( BESDataHandlerInterface &dhi ) ;
-
-#if 0
-    // These examples show how to set these kinds of BESKey params up
-    // but these examples are not used by the code. jhrg 9/24/12
-    static bool get_show_shared_dims() { return _show_shared_dims; }
-    static bool get_ignore_unknown_types() { return _ignore_unknown_types; }
-#endif
 };
 
 #endif
