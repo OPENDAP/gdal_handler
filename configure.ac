@@ -86,40 +86,6 @@ then
     AC_MSG_ERROR([You set the gdal-prefix directory to $with_gdal_prefix, but gdal-config is not there.])
 fi
 
-AC_ARG_ENABLE(local-gdal, AS_HELP_STRING([--enable-local-gdal], [Build and use the local copy of GDAL]) )
-
-# if we are going to build our own copy of GDAL and the JASPER JPEG2000 library
-# was built, be sure to include it here, too.
-if test -n "$enable_local_gdal" -a "$enable_local_gdal" = "yes"
-then
-    AC_MSG_NOTICE([Building the local GDAL library.])
-    jasper=
-    if test "$JASPER_FOUND" = "yes"
-    then
-        AC_MSG_NOTICE([Building JASPER support in the GDAL library.])
-        if test -n "$with_jasper_prefix"
-        then
-            jasper="--with-jasper=$with_jasper_prefix"
-        else
-           jasper="--with-jasper=jasper-1.900.1/build"
-        fi
-    fi
-    gdal_prx=`pwd`/gdal-1.9.1/build
-    if (cd gdal-1.9.1 && ./configure --prefix=$gdal_prx --disable-shared $jasper && make -j9 && make install)
-    then
-        GDAL_LDFLAGS="-Lgdal-1.9.1/build/lib -lgdal"
-        GDAL_CFLAGS="-Igdal-1.9.1/build/include"
-        AC_SUBST([GDAL_LDFLAGS])
-        AC_SUBST([GDAL_CFLAGS])
-        GDAL_FOUND="yes"
-    
-        # AC_MSG_NOTICE(["GDAL_LDFLAGS status >$GDAL_LDFLAGS<"])
-        # AC_MSG_NOTICE(["GDAL_CFLAGS status >$GDAL_CFLAGS<"])
-    else
-        AC_MSG_ERROR([I could not build GDAL.])
-    fi
-fi
-
 if test -z "$GDAL_FOUND"
 then
     AX_LIB_GDAL([1.7.2])
