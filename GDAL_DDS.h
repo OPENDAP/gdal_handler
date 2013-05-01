@@ -42,7 +42,7 @@ using namespace libdap;
  * destructor closes the file.
  *
  * @todo Change DataDDS to DDS if we can... Doing that will enable the
- * handler to use this to close the libraryusing this class. That is not
+ * handler to use this to close the library using this class. That is not
  * strictly needed, but it would make both the DDS and DataDDS responses
  * work the same way.
  */
