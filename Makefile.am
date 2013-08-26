@@ -47,13 +47,25 @@ CLEANFILES = *~ gdal.conf
 
 # Sample data primaries for install
 sample_datadir = $(datadir)/hyrax/data/gdal
-sample_data_DATA =
+sample_data_DATA = data/README \
+    data/Atlantic.wind.grb.bz2 \
+    data/Caribbean.wind.grb.bz2 \
+    data/EastAtlantic.wind.grb.bz2 \
+    data/CentralAtlantic.wind.grb.bz2 \
+    data/cea.tif \
+    data/cea.txt \
+    data/DIGEST_Example_2.20120926112517.tif \
+    data/SP27GTIF.TIF \
+    data/SP27GTIF.lgo \
+    data/DIGEST_Example_2.20120926112501.jp2 \
+    data/goldenears_gray.jpg \
+    data/goldenears.jpg
 
 install-data-local: gdal.conf
 	@currdate=`date +"%y%m%d%H%M"`; \
 	test -d $(DESTDIR)$(sysconfdir)/bes || $(MKDIR_P) $(DESTDIR)$(sysconfdir)/bes; \
 	test -d $(DESTDIR)$(sysconfdir)/bes/modules || $(MKDIR_P) $(DESTDIR)$(sysconfdir)/bes/modules; \
-	test -f $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf && mv -f $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf $(DESTDIR)$(sysconfdir)/bes/modules/ncml.conf.$$currdate; \
+	test -f $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf && mv -f $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf.$$currdate; \
 	$(INSTALL_DATA) gdal.conf $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf
 
 uninstall-local:
