@@ -1,3 +1,135 @@
+2013-08-29  James Gallagher <jgallagher@opendap.org>
+
+	RPM fixes
+
+	M    fileout_gdal/fileout_gdal.spec
+	M    gdal_handler/gdal_handler.spec
+
+2013-08-26  James Gallagher <jgallagher@opendap.org>
+
+	Fixed rpm build
+
+	M    gdal_handler.spec
+	M    Makefile.am
+
+2013-07-05  James Gallagher <jgallagher@opendap.org>
+
+	Removed the libdap ResponseBuilder.h include from gdal_dds.cc (it's moved into the BES dap module and it's no longer needed).
+
+2013-05-01  James Gallagher <jgallagher@opendap.org>
+
+	comments
+
+	M    GDAL_DDS.h
+
+2013-01-31  James Gallagher <jgallagher@opendap.org>
+
+	Fixes for distcheck
+
+	M    tests/Makefile.am
+	M    Makefile.am
+
+2013-01-28  James Gallagher <jgallagher@opendap.org>
+
+	Removed stuff about gdal-1.9.1 code (the dependency library used to be bundled in this directory - a failed experiment).
+
+2013-01-22  James Gallagher <jgallagher@opendap.org>
+
+	Updated baselines after the hyrax 1.8 merge
+
+	M    tests/gdal/cea.tif.0.bescmd.baseline
+	M    tests/gdal/cea.tif.2.bescmd.baseline
+
+2013-01-21  James Gallagher <jgallagher@opendap.org>
+
+	Removed; now part of dependencies
+
+	D    gdal-1.9.1
+
+2012-09-26  James Gallagher <jgallagher@opendap.org>
+
+	Added. Still working on jp2 support.
+
+2012-09-26  James Gallagher <jgallagher@opendap.org>
+
+	Tweaks for the 'nested package' build and for the gdal.conf.in file.
+
+	M    gdal.conf.in
+	M    Makefile.am
+
+2012-09-26  James Gallagher <jgallagher@opendap.org>
+
+2012-09-26  James Gallagher <jgallagher@opendap.org>
+
+2012-09-26  James Gallagher <jgallagher@opendap.org>
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Fixed (removed) the svn:exec and svn:execute property on various source
+	files.
+
+	_M   GDALTypes.cc
+	_M   GDALTypes.h
+	_M   gdal_das.cc
+	_M   gdal_dds.cc
+	_M   GDALArray.cc
+	_M   GDALModule.cc
+	_M   GDALGrid.cc
+	_M   GDALRequestHandler.cc
+	_M   GDALModule.h
+	_M   GDALRequestHandler.h
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Hackery. Does not pass 'distcheck'
+
+	A    ChangeLog
+	M    README
+	M    tests/Makefile.am
+	M    configure.ac
+	A    OSX_Resources
+	AM   OSX_Resources/InstallationCheck
+	A    OSX_Resources/License.txt
+	AM   OSX_Resources/InstallationCheck.proto
+	AM   OSX_Resources/update_mac_package_contents.pl
+	A    OSX_Resources/Info.plist
+	A    OSX_Resources/Info.plist.proto
+	A    OSX_Resources/InstallationCheck.strings
+	A    OSX_Resources/ReadMe.txt
+	A    OSX_Resources/Description.plist
+	AM   OSX_Resources/background.jpg
+	A    OSX_Resources/Welcome.html
+	M    INSTALL
+	M    Makefile.am
+	M    NEWS
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Added GRiB and JPEG2000 files to data dir; torqued around the build a bit
+	more.
+
+	M    gdal.conf.in
+	M    configure.ac
+	AM   data/EastAtlantic.wind.grb.bz2
+	AM   data/goldenears.jpg
+	AM   data/Atlantic.wind.grb.bz2
+	AM   data/goldenears_gray.jpg
+	AM   data/Caribbean.wind.grb.bz2
+	AM   data/CentralAtlantic.wind.grb.bz2
+	M    Makefile.am
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Added gdal-1.9.1 for the 'local' API option.
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Tests cleaned...
+
+2012-09-25  James Gallagher <jgallagher@opendap.org>
+
+	Changes to the build to support a local copy of GDAL.
+
 2012-09-25  James Gallagher <jgallagher@opendap.org>
 
 	Added GRiB and JPEG2000 files to data dir; torqued around the
