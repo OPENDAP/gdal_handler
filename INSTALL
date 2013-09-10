@@ -1,5 +1,5 @@
 
-Updated for version 0.9.1 on 10 Sept. 2013
+Updated for version 0.9.3 on 10 Sept. 2013
 
 To build the gdal handler, follow the usual prescription of running 
 ./configure followed by make and make install.
