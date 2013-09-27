@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include "BESDebug.h"
+#include <BESDebug.h>
 
 #include <InternalErr.h>
 #include <debug.h>
