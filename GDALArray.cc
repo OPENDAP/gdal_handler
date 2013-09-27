@@ -20,11 +20,11 @@
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 #include "config.h"
-#include "BESDebug.h"
-
 //#define DODS_DEBUG 1
 
 #include <string>
+
+#include "BESDebug.h"
 
 #include <InternalErr.h>
 #include <debug.h>
@@ -38,15 +38,6 @@ using namespace libdap ;
 /*                              GDALArray                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Array *
-NewArray(const string &n, BaseType *v)
-{
-    cerr << "Making a new GDALArray" << endl;
-
-    return new GDALArray(n, v);
-}
-#endif
 
 BaseType *
 GDALArray::ptr_duplicate()
@@ -64,13 +55,18 @@ GDALArray::~GDALArray()
 }
 
 bool
-GDALArray::read(const string &)
+GDALArray::read()
 {
     DBG(cerr << "In GDALArray::read" << endl);
 
     if (read_p())
         return false;
+
+    return false;
+#if 0
+    // Removed 9/26/13 jhrg
     throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+#endif
 }
 
 // $Log: GDALArray.cc,v $

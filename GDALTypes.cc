@@ -27,35 +27,28 @@
 
 #include "GDALTypes.h"
 
-using namespace libdap ;
+using namespace libdap;
 
 /************************************************************************/
 /* ==================================================================== */
 /*                               GDALByte                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Byte *
-NewByte(const string &n)
-{
-    return new GDALByte(n);
-}
-#endif
 
-GDALByte::GDALByte(const string &n) : Byte(n)
+GDALByte::GDALByte(const string &n) :
+		Byte(n)
 {
 }
 
 BaseType *
 GDALByte::ptr_duplicate()
 {
-    return new GDALByte(*this);
+	return new GDALByte(*this);
 }
 
-bool
-GDALByte::read(const string &)
+bool GDALByte::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 /************************************************************************/
@@ -63,27 +56,16 @@ GDALByte::read(const string &)
 /*                               GDALUInt16                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-UInt16 *
-NewUInt16(const string &n)
-{
-    return new GDALUInt16(n);
-}
-#endif
-GDALUInt16::GDALUInt16(const string &n) : UInt16(n)
-{
-}
 
 BaseType *
 GDALUInt16::ptr_duplicate()
 {
-    return new GDALUInt16(*this);
+	return new GDALUInt16(*this);
 }
 
-bool
-GDALUInt16::read(const string &)
+bool GDALUInt16::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 /************************************************************************/
@@ -91,27 +73,21 @@ GDALUInt16::read(const string &)
 /*                               GDALInt16                              */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Int16 *
-NewInt16(const string &n)
-{
-    return new GDALInt16(n);
-}
-#endif
-GDALInt16::GDALInt16(const string &n) : Int16(n)
+
+GDALInt16::GDALInt16(const string &n) :
+		Int16(n)
 {
 }
 
 BaseType *
 GDALInt16::ptr_duplicate()
 {
-    return new GDALInt16(*this);
+	return new GDALInt16(*this);
 }
 
-bool
-GDALInt16::read(const string &)
+bool GDALInt16::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 /************************************************************************/
@@ -119,27 +95,21 @@ GDALInt16::read(const string &)
 /*                               GDALUInt32                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-UInt32 *
-NewUInt32(const string &n)
-{
-    return new GDALUInt32(n);
-}
-#endif
-GDALUInt32::GDALUInt32(const string &n) : UInt32(n)
+
+GDALUInt32::GDALUInt32(const string &n) :
+		UInt32(n)
 {
 }
 
 BaseType *
 GDALUInt32::ptr_duplicate()
 {
-    return new GDALUInt32(*this);
+	return new GDALUInt32(*this);
 }
 
-bool
-GDALUInt32::read(const string &)
+bool GDALUInt32::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 /************************************************************************/
@@ -147,27 +117,21 @@ GDALUInt32::read(const string &)
 /*                               GDALInt32                               */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Int32 *
-NewInt32(const string &n)
-{
-    return new GDALInt32(n);
-}
-#endif
-GDALInt32::GDALInt32(const string &n) : Int32(n)
+
+GDALInt32::GDALInt32(const string &n) :
+		Int32(n)
 {
 }
 
 BaseType *
 GDALInt32::ptr_duplicate()
 {
-    return new GDALInt32(*this);
+	return new GDALInt32(*this);
 }
 
-bool
-GDALInt32::read(const string &)
+bool GDALInt32::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 /************************************************************************/
@@ -175,27 +139,21 @@ GDALInt32::read(const string &)
 /*                              GDALFloat32                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Float32 *
-NewFloat32(const string &n)
-{
-    return new GDALFloat32(n);
-}
-#endif
-GDALFloat32::GDALFloat32(const string &n) : Float32(n)
+
+GDALFloat32::GDALFloat32(const string &n) :
+		Float32(n)
 {
 }
 
 BaseType *
 GDALFloat32::ptr_duplicate()
 {
-    return new GDALFloat32(*this);
+	return new GDALFloat32(*this);
 }
 
-bool
-GDALFloat32::read(const string &)
+bool GDALFloat32::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 /************************************************************************/
@@ -203,27 +161,21 @@ GDALFloat32::read(const string &)
 /*                              GDALFloat64                             */
 /* ==================================================================== */
 /************************************************************************/
-#if 0
-Float64 *
-NewFloat64(const string &n)
-{
-    return new GDALFloat64(n);
-}
-#endif
-GDALFloat64::GDALFloat64(const string &n) : Float64(n)
+
+GDALFloat64::GDALFloat64(const string &n) :
+		Float64(n)
 {
 }
 
 BaseType *
 GDALFloat64::ptr_duplicate()
 {
-    return new GDALFloat64(*this);
+	return new GDALFloat64(*this);
 }
 
-bool
-GDALFloat64::read(const string &)
+bool GDALFloat64::read()
 {
-  throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
+	throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
 }
 
 // $Log: GDALTypes.cc,v $

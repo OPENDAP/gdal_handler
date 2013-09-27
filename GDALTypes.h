@@ -40,11 +40,6 @@ using namespace libdap ;
 /*                               GDALByte                               */
 /************************************************************************/
 
-#if 0
-extern Byte * NewByte(const string &n = "");
-#endif
-
-
 class GDALByte: public Byte {
 public:
     GDALByte(const string &n = "");
@@ -52,17 +47,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                              GDALUInt16                              */
 /************************************************************************/
-
-#if 0
-extern UInt16 * NewUInt16(const string &n = "");
-#endif
-
 
 class GDALUInt16: public UInt16 {
 public:
@@ -71,17 +61,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                              GDALInt16                               */
 /************************************************************************/
-
-#if 0
-extern Int16 * NewInt16(const string &n = "");
-#endif
-
 
 class GDALInt16: public Int16 {
 public:
@@ -90,17 +75,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                              GDALUInt32                               */
 /************************************************************************/
-
-#if 0
-extern UInt32 * NewUInt32(const string &n = "");
-#endif
-
 
 class GDALUInt32: public UInt32 {
 public:
@@ -109,17 +89,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                              GDALInt32                               */
 /************************************************************************/
-
-#if 0
-extern Int32 * NewInt32(const string &n = "");
-#endif
-
 
 class GDALInt32: public Int32 {
 public:
@@ -128,17 +103,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                             GDALFloat32                              */
 /************************************************************************/
-
-#if 0
-extern Float32 * NewFloat32(const string &n = "");
-#endif
-
 
 class GDALFloat32: public Float32 {
 public:
@@ -147,17 +117,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                             GDALFloat64                              */
 /************************************************************************/
-
-#if 0
-extern Float64 * NewFloat64(const string &n = "");
-#endif
-
 
 class GDALFloat64: public Float64 {
 public:
@@ -166,17 +131,12 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
 /*                              GDALArray                               */
 /************************************************************************/
-
-#if 0
-extern Array * NewArray(const string &n , BaseType *v);
-#endif
-
 
 class GDALArray: public Array {
 public:
@@ -185,7 +145,7 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
+    virtual bool read();
 };
 
 /************************************************************************/
@@ -196,20 +156,20 @@ class GDALGrid: public Grid {
 
     GDALRasterBandH hBand;
     GDALDataType    eBufType;
-    string filename;   
+    string filename;
     
     void m_duplicate(const GDALGrid &g);
 
 public:
     GDALGrid(const GDALGrid &rhs);
-    GDALGrid(const string &filenameIn, GDALRasterBandH, GDALDataType);   
+    GDALGrid(const string &filenameIn, const string &name, GDALRasterBandH, GDALDataType);
     virtual ~GDALGrid();
 
     GDALGrid &operator=(const GDALGrid &rhs);
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(/*const string &dataset*/);
+    virtual bool read();
 };
 
 // $Log: GDALTypes.h,v $
