@@ -128,8 +128,7 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
 /*      Create a grid to hold the raster.                               */
 /* -------------------------------------------------------------------- */
         Grid *grid;
-        grid = new GDALGrid( filename, hBand, eBufType );
-        grid->set_name(oss.str());
+        grid = new GDALGrid( filename, oss.str(), hBand, eBufType );
 
 /* -------------------------------------------------------------------- */
 /*      Make into an Array for the raster data with appropriate         */

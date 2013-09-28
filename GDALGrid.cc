@@ -34,206 +34,178 @@
 
 #include "GDALTypes.h"
 
-
 /************************************************************************/
 /* ==================================================================== */
 /*                               GDALGrid                               */
 /* ==================================================================== */
 /************************************************************************/
 
-void
-GDALGrid::m_duplicate(const GDALGrid &g)
+void GDALGrid::m_duplicate(const GDALGrid &g)
 {
-    DBG(cerr << "GDALGrid::m_duplicate: " << g.name() << "source pointer value: " << &g
-    		<< ", dest pointer value: " << this << endl);
+	DBG(cerr << "GDALGrid::m_duplicate: " << g.name() << "source pointer value: " << &g
+			<< ", dest pointer value: " << this << endl);
 
-    filename = g.filename;
-    hBand = g.hBand;
-    eBufType = g.eBufType;
+	filename = g.filename;
+	hBand = g.hBand;
+	eBufType = g.eBufType;
 }
-
 
 // protected
 
 BaseType *
 GDALGrid::ptr_duplicate()
 {
-    return new GDALGrid(*this);
+	return new GDALGrid(*this);
 }
 
 // public
 
-// FIXME Cleanup (remove filename param?)
-GDALGrid::GDALGrid(const string &filenameIn, GDALRasterBandH  hBandIn, 
-		GDALDataType eBufTypeIn) : Grid(filenameIn) 
-{  
-    filename = filenameIn;  
-    hBand = hBandIn;
-    eBufType = eBufTypeIn;
+GDALGrid::GDALGrid(const string &filenameIn, const string &name, GDALRasterBandH hBandIn, GDALDataType eBufTypeIn) :
+		Grid(name)
+{
+	filename = filenameIn;	// This is used to open the file in the read() method for GDALGrid
+	hBand = hBandIn;
+	eBufType = eBufTypeIn;
 }
 
-GDALGrid::GDALGrid(const GDALGrid &rhs) :Grid(rhs)
+GDALGrid::GDALGrid(const GDALGrid &rhs) :
+		Grid(rhs)
 {
-     m_duplicate(rhs);
+	m_duplicate(rhs);
 }
 
 GDALGrid &GDALGrid::operator=(const GDALGrid &rhs)
 {
-    if (this == &rhs)
-        return *this;
+	if (this == &rhs) return *this;
 
-    m_duplicate(rhs);
+	m_duplicate(rhs);
 
-    return *this;
+	return *this;
 }
 
 GDALGrid::~GDALGrid()
 {
 }
 
-bool
-GDALGrid::read()
+bool GDALGrid::read()
 {
-    bool status = false;
+	BESDEBUG("gdal", "Entering GDALGrid::read()" << endl);
 
-    BESDEBUG("gdal", "Entering GDALGrid::read()" << endl); 
+	if (read_p()) // nothing to do
+		return false;
 
-    if (read_p()) // nothing to do
-        return false;
+	/* -------------------------------------------------------------------- */
+	/*      Collect the x and y sampling values from the constraint.        */
+	/* -------------------------------------------------------------------- */
+	GDALArray *array = static_cast<GDALArray*>(array_var());
+	Array::Dim_iter p = array->dim_begin();
+	int start = array->dimension_start(p, true);
+	int stride = array->dimension_stride(p, true);
+	int stop = array->dimension_stop(p, true);
 
-/* -------------------------------------------------------------------- */
-/*      Collect the x and y sampling values from the constraint.        */
-/* -------------------------------------------------------------------- */
-    GDALArray *array = static_cast<GDALArray*>(array_var());
-    Array::Dim_iter p = array->dim_begin();
-    int start = array->dimension_start(p,true);
-    int stride = array->dimension_stride(p, true);
-    int stop = array->dimension_stop(p, true); 
+	p++;
+	int start_2 = array->dimension_start(p, true);
+	int stride_2 = array->dimension_stride(p, true);
+	int stop_2 = array->dimension_stop(p, true);
 
-    p++;
-    int start_2 = array->dimension_start(p,true);
-    int stride_2 = array->dimension_stride(p, true);
-    int stop_2 = array->dimension_stop(p, true); 
+	if (start + stop + stride == 0) { //default rows
+		start = 0;
+		stride = 1;
+		stop = GDALGetRasterBandYSize(hBand) - 1;
+	}
+	if (start_2 + stop_2 + stride_2 == 0) { //default columns
+		start_2 = 0;
+		stride_2 = 1;
+		stop_2 = GDALGetRasterBandXSize(hBand) - 1;
+	}
 
-    if(start+stop+stride == 0){ //default rows
-        start = 0;
-        stride = 1;
-        stop = GDALGetRasterBandYSize( hBand )-1;
-    }
-    if(start_2+stop_2+stride_2 == 0){ //default columns
-        start_2 = 0;
-        stride_2 = 1;
-        stop_2 = GDALGetRasterBandXSize( hBand )-1;
-    }
+	/* -------------------------------------------------------------------- */
+	/*      Build a window and buf size from this.                          */
+	/* -------------------------------------------------------------------- */
+	int nWinXOff, nWinYOff, nWinXSize, nWinYSize, nBufXSize, nBufYSize;
 
-/* -------------------------------------------------------------------- */
-/*      Build a window and buf size from this.                          */
-/* -------------------------------------------------------------------- */
-    int nWinXOff, nWinYOff, nWinXSize, nWinYSize, nBufXSize, nBufYSize;
+	nWinXOff = start_2;
+	nWinYOff = start;
+	nWinXSize = stop_2 + 1 - start_2;
+	nWinYSize = stop + 1 - start;
 
-    nWinXOff = start_2;
-    nWinYOff = start;
-    nWinXSize = stop_2+1 - start_2;
-    nWinYSize = stop+1 - start;
+	nBufXSize = (stop_2 - start_2) / stride_2 + 1;
+	nBufYSize = (stop - start) / stride + 1;
 
-    nBufXSize = (stop_2 - start_2) / stride_2 + 1;
-    nBufYSize = (stop   - start  ) / stride + 1;
-    
-/* -------------------------------------------------------------------- */
-/*      Allocate buffer.                                                */
-/* -------------------------------------------------------------------- */
-    int nPixelSize = GDALGetDataTypeSize( eBufType ) / 8;
-    // TODO use vector<char>
-    void *pData = CPLMalloc( nBufXSize * nBufYSize * nPixelSize );
+	/* -------------------------------------------------------------------- */
+	/*      Allocate buffer.                                                */
+	/* -------------------------------------------------------------------- */
+	int nPixelSize = GDALGetDataTypeSize(eBufType) / 8;
+	vector<char> pData(nBufXSize * nBufYSize * nPixelSize);
 
-/* -------------------------------------------------------------------- */
-/*      Read request into buffer.                                       */
-/* -------------------------------------------------------------------- */
-    CPLErr eErr;
+	/* -------------------------------------------------------------------- */
+	/*      Read request into buffer.                                       */
+	/* -------------------------------------------------------------------- */
+	CPLErr eErr = GDALRasterIO(hBand, GF_Read, nWinXOff, nWinYOff, nWinXSize, nWinYSize,
+			&pData[0], nBufXSize, nBufYSize, eBufType, 0, 0);
+	if (eErr != CE_None)
+		throw Error("Error reading: " + name());
 
-    eErr = 
-        GDALRasterIO( hBand, GF_Read, 
-                      nWinXOff, nWinYOff, nWinXSize, nWinYSize, 
-                      pData, nBufXSize, nBufYSize, eBufType, 0, 0 );
+	array->val2buf(&pData[0]);
+	array->set_read_p(true);
 
-    
-    // TODO should check for errors!
+	/* -------------------------------------------------------------------- */
+	/*      Read or default the geotransform used to generate the           */
+	/*      georeferencing maps.                                            */
+	/* -------------------------------------------------------------------- */
 
-    // TODO use set_value()
-    array->val2buf( pData );
-    array->set_read_p( true );
-    // set_read_p( true ); Set at the end of the method. jhrg 6/24/12
+	// Move this into the gdal_dds.cc code so that it store this in the
+	// Grid or maybe in the GDALDDS instance? Then we can avoid a second
+	// open/read operation on the file. jhrg
+	GDALDatasetH hDS;
+	GDALAllRegister(); // even though the calling function called this.
 
+	hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
 
-    CPLFree( pData );
+	if (hDS == NULL) throw Error(string(CPLGetLastErrorMsg()));
 
-/* -------------------------------------------------------------------- */
-/*      Read or default the geotransform used to generate the           */
-/*      georeferencing maps.                                            */
-/* -------------------------------------------------------------------- */
+	double adfGeoTransform[6];
 
-    // Move this into the gdal_dds.cc code so that it store this in the
-    // Grid or maybe in the GDALDDS instance? Then we can avoid a second
-    // open/read operation on the file. jhrg
-    GDALDatasetH hDS;
-    GDALAllRegister(); // even though the calling function called this.
+	if (GDALGetGeoTransform(hDS, adfGeoTransform) != CE_None) {
+		adfGeoTransform[0] = 0.0;
+		adfGeoTransform[1] = 1.0;
+		adfGeoTransform[2] = 0.0;
+		adfGeoTransform[3] = 0.0;
+		adfGeoTransform[4] = 0.0;
+		adfGeoTransform[5] = 1.0;
+	}
 
-    hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+	GDALClose(hDS);
 
-    if (hDS == NULL)
-        throw Error(string(CPLGetLastErrorMsg()));
+	/* -------------------------------------------------------------------- */
+	/*      Set "y" map array.                                              */
+	/* -------------------------------------------------------------------- */
+	vector<double> padfMap(nBufYSize);
 
-    double adfGeoTransform[6];
+	for (int i = 0, iLine = start; iLine <= stop; iLine += stride) {
+		padfMap[i++] = adfGeoTransform[3] + adfGeoTransform[5] * iLine;
+	}
 
-    if (GDALGetGeoTransform(hDS, adfGeoTransform) != CE_None) {
-        adfGeoTransform[0] = 0.0;
-        adfGeoTransform[1] = 1.0;
-        adfGeoTransform[2] = 0.0;
-        adfGeoTransform[3] = 0.0;
-        adfGeoTransform[4] = 0.0;
-        adfGeoTransform[5] = 1.0;
-    }
+	Map_iter miter = map_begin();
+	array = static_cast<GDALArray*>((*miter));
+	array->val2buf((void *) &padfMap[0]);
+	array->set_read_p(true);
 
-    GDALClose(hDS);
+	/* -------------------------------------------------------------------- */
+	/*      Set the "x" map.                                                */
+	/* -------------------------------------------------------------------- */
+	padfMap.reserve(nBufXSize);
 
-/* -------------------------------------------------------------------- */
-/*      Set "y" map array.                                              */
-/* -------------------------------------------------------------------- */
-    double *padfMap;
-    int i, iPixel, iLine;
+	for (int i = 0, iPixel = start_2; iPixel <= stop_2; iPixel += stride_2) {
+		padfMap[i++] = adfGeoTransform[0] + iPixel * adfGeoTransform[1];
+	}
 
-    padfMap = (double *) CPLMalloc(sizeof(double) * nBufYSize);
+	++miter;
+	array = static_cast<GDALArray*>(*miter);
+	array->val2buf((void *) &padfMap[0]);
+	array->set_read_p(true);
 
-    for( i = 0, iLine = start; iLine <= stop; iLine += stride ) {
-        padfMap[i++] = adfGeoTransform[3] + adfGeoTransform[5] * iLine;
-    }
+	set_read_p(true);
 
-    Map_iter miter = map_begin(); 
-    array = static_cast<GDALArray*>( (*miter) );
-    array->val2buf( (void *) padfMap );
-    array->set_read_p( true );
-    
-    CPLFree( padfMap );
-
-/* -------------------------------------------------------------------- */
-/*      Set the "x" map.                                                */
-/* -------------------------------------------------------------------- */
-
-    padfMap = (double *) CPLMalloc(sizeof(double) * nBufXSize);
-
-    for( i = 0, iPixel = start_2; iPixel <= stop_2; iPixel += stride_2 ) {
-        padfMap[i++] = adfGeoTransform[0] + iPixel * adfGeoTransform[1];
-    }
-
-    ++miter;
-    array = static_cast<GDALArray*>( *miter );
-    array->val2buf( (void *) padfMap );
-    array->set_read_p( true );
-    
-    CPLFree( padfMap );
-
-    // TODO Added this; maybe it's not needed? jhrg 6/21/12
-    set_read_p(true);
-
-    return status;
+	return false;
 }
