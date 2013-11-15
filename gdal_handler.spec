@@ -8,12 +8,12 @@ Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
 Requires:        libdap >= 3.11.0
 Requires:        bes >= 3.11.0
-Requires:        libgdal >= 1.8
+Requires:        gdal >= 1.8
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:   libdap-devel >= 3.11.0
 BuildRequires:   bes-devel >= 3.11.0
-BuildRequires:   libgdal-devel >= 1.10
+BuildRequires:   gdal-devel >= 1.8
 
 %description
 This is the GDAL handler for our data server. We hope it will serve any
