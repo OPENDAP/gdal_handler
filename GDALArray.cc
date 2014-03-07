@@ -60,13 +60,9 @@ GDALArray::read()
     DBG(cerr << "In GDALArray::read" << endl);
 
     if (read_p())
-        return false;
+        return true;
 
-    return false;
-#if 0
-    // Removed 9/26/13 jhrg
-    throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");
-#endif
+    return true;
 }
 
 // $Log: GDALArray.cc,v $

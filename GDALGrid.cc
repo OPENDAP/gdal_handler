@@ -92,7 +92,7 @@ bool GDALGrid::read()
 	BESDEBUG("gdal", "Entering GDALGrid::read()" << endl);
 
 	if (read_p()) // nothing to do
-		return false;
+		return true;
 
 	/* -------------------------------------------------------------------- */
 	/*      Collect the x and y sampling values from the constraint.        */
@@ -207,5 +207,5 @@ bool GDALGrid::read()
 
 	set_read_p(true);
 
-	return false;
+	return true;
 }
