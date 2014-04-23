@@ -1,3 +1,48 @@
+2013-11-15  James Gallagher <jgallagher@opendap.org>
+
+	Updated the pec file to use the current name of the gdal package in the
+	dependencies.
+
+	M    gdal_handler.spec
+
+2013-10-11  James Gallagher <jgallagher@opendap.org>
+
+	Edits to match the new, sane, semantics for BaseType::read(). True now means done/eof and flase means more data to read (more instances for a sequence). All the tests pass.
+
+2013-10-01  James Gallagher <jgallagher@opendap.org>
+
+	Updated the FSF address in the copyright headers
+
+2013-09-27  James Gallagher <jgallagher@opendap.org>
+
+	svn ignore updated; minor change in GDALArray.cc (using <> for an include)
+
+2013-09-27  James Gallagher <jgallagher@opendap.org>
+
+	This handler used a bogus definition of BaseType::read() which caused various warnings with clang 5.
+
+2013-09-26  James Gallagher <jgallagher@opendap.org>
+
+	removed -fno-defer-pop from all copies of Makefile.am since the new OSX compiler prints warnings about it and it seems to not make a difference with newer g++ versions.
+
+2013-09-10  Nathan Potter <ndp@opendap.org>
+
+	gdal_handler: Updated ChangeLog, NEWS, INSTALL, etc. for Hyrax 1.9
+
+2013-09-10  Nathan Potter <ndp@opendap.org>
+
+	gdal_handler: Updated ChangeLog, NEWS, INSTALL, etc. for Hyrax 1.9
+
+2013-08-29  James Gallagher <jgallagher@opendap.org>
+
+	RPM fixes
+
+	M    fileout_gdal/fileout_gdal.spec
+	M    gdal_handler/gdal_handler.spec
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2013-08-29  James Gallagher <jgallagher@opendap.org>
 
 	RPM fixes

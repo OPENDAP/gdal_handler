@@ -4,7 +4,7 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT(gdal_handler, 0.9.3, support@opendap.org)
+AC_INIT(gdal_handler, 0.9.4, support@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_MACRO_DIR([conf])
 
@@ -57,13 +57,13 @@ AC_SEARCH_LIBS([isdigit], [cctype])
 AC_CHECK_FUNCS([strchr isdigit])
 
 dnl Checks for specific libraries
-AC_CHECK_LIBDAP([3.11.0],
+AC_CHECK_LIBDAP([3.13.0],
  [
  ],
  [ AC_MSG_ERROR([Cannot find expected version of libdap])
 ])
 
-AC_CHECK_BES([3.9.0],
+AC_CHECK_BES([3.13.0],
 [
 ],
 [ AC_MSG_ERROR([Could not find expected version of bes library and headers])
@@ -88,7 +88,7 @@ fi
 
 if test -z "$GDAL_FOUND"
 then
-    AX_LIB_GDAL([1.7.2])
+    AX_LIB_GDAL([1.10])
     if test ! -z "$GDAL_CFLAGS" -a ! -z "$GDAL_LDFLAGS"; then
         GDAL_FOUND="yes"
     fi
