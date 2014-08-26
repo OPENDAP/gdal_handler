@@ -32,10 +32,11 @@
 
 #include <DDS.h>
 #include <DAS.h>
-//TODO Remove #include <ResponseBuilder.h>
 #include <debug.h>
 
 #include "GDALTypes.h"
+
+using namespace libdap;
 
 extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
 

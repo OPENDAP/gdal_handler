@@ -30,7 +30,7 @@
 
 #include <DAS.h>
 
-#include "GDALTypes.h"
+using namespace libdap;
 
 static void translate_metadata( char **md, AttrTable *parent_table );
 static void attach_str_attr_item( AttrTable *parent_table,

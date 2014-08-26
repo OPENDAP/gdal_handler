@@ -67,7 +67,6 @@ using namespace libdap;
 extern void gdal_read_dataset_attributes(DAS &das, const string & filename);
 extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);
 
-
 GDALRequestHandler::GDALRequestHandler(const string &name) :
     BESRequestHandler(name)
 {
@@ -206,14 +205,6 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
         Ancillary::read_ancillary_das(*das, filename);
 
         gdds->transfer_attributes(das);
-#ifdef DEBUG_DEBUG
-        cerr << "About to print vars info..." << endl;
-        DDS::Vars_iter i = gdds->var_begin();
-        while (i != gdds->var_end()) {
-            BaseType *b = *i++;
-            cerr << b->name() << " is a " << b->type_name() << "(" << typeid(*b).name() << ")" << endl;
-        }
-#endif
         bdds->set_constraint(dhi);
 
         bdds->clear_container();
@@ -233,9 +224,6 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
 
     return true;
 }
-
-// FIXME
-#include <D4Group.h>
 
 bool GDALRequestHandler::gdal_build_dmr(BESDataHandlerInterface &dhi)
 {
@@ -282,20 +270,11 @@ bool GDALRequestHandler::gdal_build_dmr(BESDataHandlerInterface &dhi)
 	dmr->set_factory(new D4BaseTypeFactory);
 	dmr->build_using_dds(dds);
 
-	BESDEBUG("gdal", "BES DMR D4Group pointer: " << dmr->root() /*->get_parent()*/ << endl);
-
 	GDALDMR *gdal_dmr = new GDALDMR(dmr);
 	gdal_dmr->setGDALDataset(hDS);
 
-	BESDEBUG("gdal", "gdal DMR D4Group pointer: " << gdal_dmr->root() /*->get_parent()*/ << endl);
-
-	delete dmr;
-	bes_dmr.set_dmr(gdal_dmr);
-
-	XMLWriter xml;
-	BESDEBUG("gdal", "About to print gdal DMR..." << endl);
-	gdal_dmr->print_dap4(xml);
-	BESDEBUG("gdal", "gdal DMR: " << xml.get_doc() << endl);
+	delete dmr;	// The call below will make 'dmr' unreachable; delete it now to avoid a leak.
+	bes_dmr.set_dmr(gdal_dmr); // BESDMRResponse will delete gdal_dmr
 
 	// Instead of fiddling with the internal storage of the DHI object,
 	// (by setting dhi.data[DAP4_CONSTRAINT], etc., directly) use these
