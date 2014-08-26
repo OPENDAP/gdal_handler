@@ -19,54 +19,50 @@
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
-#ifndef GDAL_DDS_H_
-#define GDAL_DDS_H_
+#ifndef GDAL_DMR_H_
+#define GDAL_DMR_H_
 
 #include "config.h"
 
 #include <gdal.h>
 
-#include <DataDDS.h>
+#include <DMR.h>
 
 /**
- * This specialization of DDS is used to manage the 'resource' of the open
+ * This specialization of DMR is used to manage the 'resource' of the open
  * GDAL dataset handle so that the BES will close that handle once the
  * framework is done working with the file. This provides a way for the
  * code in gdal_dds.cc to read binary objects from the file using the gdal
  * library and embed those in instances of Grid. Those Grid variables are
  * used later on (but during the same service request, so the binary data
- * are still valid). When the DDS is deleted by the BES, the GDALDDS()
+ * are still valid). When the DDS is deleted by the BES, the GDALDMR()
  * destructor closes the file.
- *
- * @todo Change DataDDS to DDS if we can... Doing that will enable the
- * handler to use this to close the library using this class. That is not
- * strictly needed, but it would make both the DDS and DataDDS responses
- * work the same way.
  */
-class GDALDDS : public libdap::DataDDS {
+class GDALDMR : public libdap::DMR {
 private:
     GDALDatasetH d_hDS;
 
-    void m_duplicate(const GDALDDS &src) { d_hDS = src.d_hDS; }
+    void m_duplicate(const GDALDMR &src) { d_hDS = src.d_hDS; }
 
 public:
-    GDALDDS(libdap::DataDDS *ddsIn) : libdap::DataDDS(*ddsIn), d_hDS(0) {}
-    GDALDDS(libdap::BaseTypeFactory *factory, const string &name) : libdap::DataDDS(factory, name), d_hDS(0) {}
+    GDALDMR(libdap::DMR *dmr) : libdap::DMR(*dmr), d_hDS(0) {}
+    GDALDMR(libdap::D4BaseTypeFactory *factory, const string &name) : libdap::DMR(factory, name), d_hDS(0) {}
 
-    GDALDDS(const GDALDDS &rhs) : libdap::DataDDS(rhs) {
+    GDALDMR(const GDALDMR &rhs) : libdap::DMR(rhs) {
         m_duplicate(rhs);
     }
 
-    GDALDDS & operator= (const GDALDDS &rhs) {
+    GDALDMR & operator= (const GDALDMR &rhs) {
         if (this == &rhs)
             return *this;
 
+        dynamic_cast<libdap::DMR &>(*this) = rhs;
         m_duplicate(rhs);
 
         return *this;
     }
 
-    ~GDALDDS() {
+    ~GDALDMR() {
         if (d_hDS)
             GDALClose(d_hDS);
     }
@@ -76,4 +72,4 @@ public:
 };
 
 
-#endif /* GDAL_DDS_H_ */
+#endif /* GDAL_DMR_H_ */

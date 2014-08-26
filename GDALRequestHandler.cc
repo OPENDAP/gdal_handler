@@ -24,7 +24,6 @@
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
-
 // GDALRequestHandler.cc
 
 #include "config.h"
@@ -32,8 +31,12 @@
 #include <string>
 #include <sstream>
 
-#include "GDAL_DDS.h"
-#include "GDALRequestHandler.h"
+#include <DMR.h>
+#include <mime_util.h>
+#include <D4BaseTypeFactory.h>
+#include <InternalErr.h>
+#include <Ancillary.h>
+#include <debug.h>
 
 #include <BESResponseHandler.h>
 #include <BESResponseNames.h>
@@ -41,54 +44,29 @@
 #include <BESDASResponse.h>
 #include <BESDDSResponse.h>
 #include <BESDataDDSResponse.h>
+#include <BESDMRResponse.h>
+
 #include <BESVersionInfo.h>
-#include <InternalErr.h>
 #include <BESDapError.h>
 #include <BESInternalFatalError.h>
 #include <BESDataNames.h>
-#include <TheBESKeys.h>
-#include <BESUtil.h>
-#include <Ancillary.h>
 #include <BESServiceRegistry.h>
 #include <BESUtil.h>
 #include <BESContextManager.h>
+#include <BESDebug.h>
+#include <TheBESKeys.h>
 
-#include <debug.h>
+#include "GDAL_DDS.h"
+#include "GDAL_DMR.h"
+#include "GDALRequestHandler.h"
 
 #define GDAL_NAME "gdal"
 
 using namespace libdap;
-#if 0
-bool GDALRequestHandler::_show_shared_dims = false;
-bool GDALRequestHandler::_show_shared_dims_set = false;
-bool GDALRequestHandler::_ignore_unknown_types = false;
-bool GDALRequestHandler::_ignore_unknown_types_set = false;
-#endif
 
-extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
+extern void gdal_read_dataset_attributes(DAS &das, const string & filename);
 extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);
 
-#if 0
-/** Is the version number string greater than or equal to the value.
- * @note Works only for versions with zero or one dot. If the conversion of
- * the string to a float fails for any reason, this returns false.
- * @param version The string value (e.g., 3.2)
- * @param value A floating point value.
- */
-static bool version_ge(const string &version, float value)
-{
-    try {
-        float v;
-        istringstream iss(version);
-        iss >> v;
-
-        return (v >= value);
-    }
-    catch (...) {
-        return false;
-    }
-}
-#endif
 
 GDALRequestHandler::GDALRequestHandler(const string &name) :
     BESRequestHandler(name)
@@ -96,61 +74,12 @@ GDALRequestHandler::GDALRequestHandler(const string &name) :
     add_handler(DAS_RESPONSE, GDALRequestHandler::gdal_build_das);
     add_handler(DDS_RESPONSE, GDALRequestHandler::gdal_build_dds);
     add_handler(DATA_RESPONSE, GDALRequestHandler::gdal_build_data);
+
+    add_handler(DMR_RESPONSE, GDALRequestHandler::gdal_build_dmr);
+    add_handler(DAP4DATA_RESPONSE, GDALRequestHandler::gdal_build_dmr);
+
     add_handler(HELP_RESPONSE, GDALRequestHandler::gdal_build_help);
     add_handler(VERS_RESPONSE, GDALRequestHandler::gdal_build_version);
-
-#if 0
-    // See comments in the header about these... jhrg
-    if (GDALRequestHandler::_show_shared_dims_set == false) {
-        bool key_found = false, context_found = false;
-        // string key = "GDAL.ShowSharedDimensions";
-        string doset;
-        TheBESKeys::TheKeys()->get_value("GDAL.ShowSharedDimensions", doset, key_found);
-        // TODO Fix this so it works
-        string context_value = BESContextManager::TheManager()->get_context("xdap_accept", context_found);
-        //cerr << "context value: " << context_value << endl;
-        //cerr << "Testing values..." << endl;
-        if (key_found) {
-            //cerr << " Key found" << endl;
-            doset = BESUtil::lowercase(doset);
-            if (doset == "true" || doset == "yes") {
-                GDALRequestHandler::_show_shared_dims = true;
-            }
-        }
-        else if (context_found) {
-            //cerr << "context found" << endl;
-            if (version_ge(context_value, 3.2))
-                GDALRequestHandler::_show_shared_dims = false;
-            else
-                GDALRequestHandler::_show_shared_dims = true;
-        }
-        else {
-            //cerr << "Set default value" << endl;
-            GDALRequestHandler::_show_shared_dims = true;
-        }
-
-        GDALRequestHandler::_show_shared_dims_set = true;
-    }
-
-    if (GDALRequestHandler::_ignore_unknown_types_set == false) {
-        bool key_found = false;
-        string doset;
-        TheBESKeys::TheKeys()->get_value("GDAL.IgnoreUnknownTypes", doset, key_found);
-        if (key_found) {
-            doset = BESUtil::lowercase(doset);
-            if (doset == "true" || doset == "yes")
-                GDALRequestHandler::_ignore_unknown_types = true;
-            else
-                GDALRequestHandler::_ignore_unknown_types = false;
-        }
-        else {
-            // if the key is not found, set the default value
-            GDALRequestHandler::_ignore_unknown_types = false;
-        }
-
-        GDALRequestHandler::_ignore_unknown_types_set = true;
-    }
-#endif
 }
 
 GDALRequestHandler::~GDALRequestHandler()
@@ -303,6 +232,80 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
     }
 
     return true;
+}
+
+// FIXME
+#include <D4Group.h>
+
+bool GDALRequestHandler::gdal_build_dmr(BESDataHandlerInterface &dhi)
+{
+	// Because this code does not yet know how to build a DMR directly, use
+	// the DMR ctor that builds a DMR using a 'full DDS' (a DDS with attributes).
+	// First step, build the 'full DDS'
+	string data_path = dhi.container->access();
+
+	BaseTypeFactory factory;
+	DDS dds(&factory, name_path(data_path), "3.2");
+	dds.filename(data_path);
+
+	GDALDatasetH hDS = 0;	// Set in the following block but needed later.
+
+	try {
+		hDS = gdal_read_dataset_variables(&dds, data_path);
+
+		DAS das;
+		gdal_read_dataset_attributes(das, data_path);
+		Ancillary::read_ancillary_das(das, data_path);
+		dds.transfer_attributes(&das);
+	}
+	catch (InternalErr &e) {
+		throw BESDapError(e.get_error_message(), true, e.get_error_code(), __FILE__, __LINE__);
+	}
+	catch (Error &e) {
+		throw BESDapError(e.get_error_message(), false, e.get_error_code(), __FILE__, __LINE__);
+	}
+	catch (...) {
+		throw BESDapError("Caught unknown error building GDAL DMR response", true, unknown_error, __FILE__, __LINE__);
+	}
+
+	// Extract the DMR Response object - this holds the DMR used by the
+	// other parts of the framework.
+	BESResponseObject *response = dhi.response_handler->get_response_object();
+	BESDMRResponse &bes_dmr = dynamic_cast<BESDMRResponse &>(*response);
+
+	// In this handler we use a different pattern since the handler specializes the DDS/DMR.
+	// First, build the DMR adding the open handle to the GDAL dataset, then free the DMR
+	// the BES built and add this one. The GDALDMR object will close the open dataset when
+	// the BES runs the DMR's destructor.
+
+	DMR *dmr = bes_dmr.get_dmr();
+	dmr->set_factory(new D4BaseTypeFactory);
+	dmr->build_using_dds(dds);
+
+	BESDEBUG("gdal", "BES DMR D4Group pointer: " << dmr->root() /*->get_parent()*/ << endl);
+
+	GDALDMR *gdal_dmr = new GDALDMR(dmr);
+	gdal_dmr->setGDALDataset(hDS);
+
+	BESDEBUG("gdal", "gdal DMR D4Group pointer: " << gdal_dmr->root() /*->get_parent()*/ << endl);
+
+	delete dmr;
+	bes_dmr.set_dmr(gdal_dmr);
+
+	XMLWriter xml;
+	BESDEBUG("gdal", "About to print gdal DMR..." << endl);
+	gdal_dmr->print_dap4(xml);
+	BESDEBUG("gdal", "gdal DMR: " << xml.get_doc() << endl);
+
+	// Instead of fiddling with the internal storage of the DHI object,
+	// (by setting dhi.data[DAP4_CONSTRAINT], etc., directly) use these
+	// methods to set the constraints. But, why? Ans: from Patrick is that
+	// in the 'container' mode of BES each container can have a different
+	// CE.
+	bes_dmr.set_dap4_constraint(dhi);
+	bes_dmr.set_dap4_function(dhi);
+
+	return true;
 }
 
 bool GDALRequestHandler::gdal_build_help(BESDataHandlerInterface & dhi)

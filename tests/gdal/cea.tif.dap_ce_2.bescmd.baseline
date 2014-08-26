@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" dapVersion="4.0" dmrVersion="1.0" name="cea.tif">
+    <Float64 name="northing">
+        <Dim size="10"/>
+        <Attribute name="DAP4_Checksum_CRC32" type="String">
+            <Value>3889d992</Value>
+        </Attribute>
+    </Float64>
+    <Float64 name="easting">
+        <Dim size="10"/>
+        <Attribute name="DAP4_Checksum_CRC32" type="String">
+            <Value>bdbf831f</Value>
+        </Attribute>
+    </Float64>
+    <Byte name="band_1">
+        <Dim size="10"/>
+        <Dim size="10"/>
+        <Attribute name="add_offset" type="Float32">
+            <Value>0</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float32">
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="PhotometricInterpretation" type="String">
+            <Value>Gray</Value>
+        </Attribute>
+        <Attribute name="DAP4_Checksum_CRC32" type="String">
+            <Value>9cf8e008</Value>
+        </Attribute>
+    </Byte>
+    <Attribute name="GLOBAL" type="Container">
+        <Attribute name="Northernmost_Northing" type="Float32">
+            <Value>4255884.543802192</Value>
+        </Attribute>
+        <Attribute name="Southernmost_Northing" type="Float32">
+            <Value>4224973.143255847</Value>
+        </Attribute>
+        <Attribute name="Easternmost_Easting" type="Float32">
+            <Value>2358.211624949061</Value>
+        </Attribute>
+        <Attribute name="Westernmost_Northing" type="Float32">
+            <Value>-28493.16678441252</Value>
+        </Attribute>
+        <Attribute name="GeoTransform" type="String">
+            <Value>-28493.16678441252 60.02213698319374 0 4255884.543802192 0 -60.02213698319374</Value>
+        </Attribute>
+        <Attribute name="Metadata" type="Container">
+            <Attribute name="AREA_OR_POINT" type="String">
+                <Value>Area</Value>
+            </Attribute>
+        </Attribute>
+        <Attribute name="spatial_ref" type="String">
+            <Value>PROJCS[&quot;unnamed&quot;,GEOGCS[&quot;NAD27&quot;,DATUM[&quot;North_American_Datum_1927&quot;,SPHEROID[&quot;Clarke 1866&quot;,6378206.4,294.9786982139006,AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]],PRIMEM[&quot;Greenwich&quot;,0],UNIT[&quot;degree&quot;,0.0174532925199433],AUTHORITY[&quot;EPSG&quot;,&quot;4267&quot;]],PROJECTION[&quot;Cylindrical_Equal_Area&quot;],PARAMETER[&quot;standard_parallel_1&quot;,33.75],PARAMETER[&quot;central_meridian&quot;,-117.333333333333],PARAMETER[&quot;false_easting&quot;,0],PARAMETER[&quot;false_northing&quot;,0],UNIT[&quot;metre&quot;,1,AUTHORITY[&quot;EPSG&quot;,&quot;9001&quot;]]]</Value>
+        </Attribute>
+    </Attribute>
+</Dataset>
+
+The data:
+Float64 northing[10] = {4255884.54380219, 4255824.52166521, 4255764.49952823, 4255704.47739124, 4255644.45525426, 4255584.43311728, 4255524.41098029, 4255464.38884331, 4255404.36670633, 4255344.34456934};
+Float64 easting[10] = {-28493.1667844125, -28433.1446474293, -28373.1225104461, -28313.1003734629, -28253.0782364797, -28193.0560994966, -28133.0339625134, -28073.0118255302, -28012.989688547, -27952.9675515638};
+Byte band_1[10][10] = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},{107, 123, 132, 115, 132, 132, 140, 132, 132, 132},{115, 132, 107, 123, 148, 115, 165, 115, 140, 107},{115, 132, 140, 132, 123, 115, 140, 107, 140, 115},{148, 132, 123, 123, 115, 132, 132, 123, 115, 123},{132, 156, 132, 140, 132, 132, 115, 115, 115, 123},{189, 173, 173, 148, 148, 115, 148, 123, 107, 132},{197, 173, 148, 140, 140, 132, 99, 132, 123, 115},{148, 123, 148, 115, 148, 123, 140, 123, 107, 115}};
+

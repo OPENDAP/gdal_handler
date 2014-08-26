@@ -7,12 +7,12 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -139,8 +139,17 @@ public:
 /************************************************************************/
 
 class GDALArray: public Array {
+    string filename;
+    GDALRasterBandH hBand;
+    GDALDataType eBufType;
+
+    void m_duplicate(const GDALArray &a);
+
 public:
     GDALArray(const string &n = "", BaseType *v = 0);
+    // Added for DAP4 support. jhrg 8/26/14
+    GDALArray(const string &name, BaseType *proto, const string &filenameIn, GDALRasterBandH hBandIn, GDALDataType eBufTypeIn);
+    GDALArray(const GDALArray &src);
     virtual ~GDALArray();
 
     virtual BaseType *ptr_duplicate();
@@ -155,14 +164,14 @@ public:
 class GDALGrid: public Grid {
 
     GDALRasterBandH hBand;
-    GDALDataType    eBufType;
+    GDALDataType eBufType;
     string filename;
-    
+
     void m_duplicate(const GDALGrid &g);
 
 public:
     GDALGrid(const GDALGrid &rhs);
-    GDALGrid(const string &filenameIn, const string &name, GDALRasterBandH, GDALDataType);
+    GDALGrid(const string &filenameIn, const string &name, GDALRasterBandH hBandIn, GDALDataType eBufTypeIn);
     virtual ~GDALGrid();
 
     GDALGrid &operator=(const GDALGrid &rhs);
@@ -171,11 +180,6 @@ public:
 
     virtual bool read();
 };
-
-// $Log: GDALTypes.h,v $
-// Revision 1.1  2004/10/04 14:29:29  warmerda
-// New
-//
 
 #endif // ndef _GDALTypes_h
 
