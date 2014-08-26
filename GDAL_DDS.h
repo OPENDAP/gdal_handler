@@ -27,6 +27,9 @@
 #include <gdal.h>
 
 #include <DataDDS.h>
+#include <InternalErr.h>
+
+using namespace libdap;
 
 /**
  * This specialization of DDS is used to manage the 'resource' of the open
@@ -43,17 +46,17 @@
  * strictly needed, but it would make both the DDS and DataDDS responses
  * work the same way.
  */
-class GDALDDS : public libdap::DataDDS {
+class GDALDDS : public DataDDS {
 private:
     GDALDatasetH d_hDS;
 
     void m_duplicate(const GDALDDS &src) { d_hDS = src.d_hDS; }
 
 public:
-    GDALDDS(libdap::DataDDS *ddsIn) : libdap::DataDDS(*ddsIn), d_hDS(0) {}
-    GDALDDS(libdap::BaseTypeFactory *factory, const string &name) : libdap::DataDDS(factory, name), d_hDS(0) {}
+    GDALDDS(DataDDS *ddsIn) : DataDDS(*ddsIn), d_hDS(0) {}
+    GDALDDS(BaseTypeFactory *factory, const string &name) : DataDDS(factory, name), d_hDS(0) {}
 
-    GDALDDS(const GDALDDS &rhs) : libdap::DataDDS(rhs) {
+    GDALDDS(const GDALDDS &rhs) : DataDDS(rhs) {
         m_duplicate(rhs);
     }
 

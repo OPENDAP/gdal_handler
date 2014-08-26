@@ -7,12 +7,12 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-//
+// 
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -33,10 +33,6 @@
 #include <debug.h>
 
 #include "GDALTypes.h"
-
-// From gdal_dds.cc
-void read_data_array(GDALArray *array, GDALRasterBandH hBand, GDALDataType eBufType);
-void read_map_array(Array *map, GDALRasterBandH hBand, string filename);
 
 /************************************************************************/
 /* ==================================================================== */
@@ -98,21 +94,10 @@ bool GDALGrid::read()
 	if (read_p()) // nothing to do
 		return true;
 
+	/* -------------------------------------------------------------------- */
+	/*      Collect the x and y sampling values from the constraint.        */
+	/* -------------------------------------------------------------------- */
 	GDALArray *array = static_cast<GDALArray*>(array_var());
-	read_data_array(array, hBand, eBufType);
-	array->set_read_p(true);
-
-	Map_iter miter = map_begin();
-	array = static_cast<GDALArray*>((*miter));
-	read_map_array(array, hBand, filename);
-	array->set_read_p(true);
-
-	++miter;
-	array = static_cast<GDALArray*>(*miter);
-	read_map_array(array, hBand, filename);
-	array->set_read_p(true);
-
-#if 0
 	Array::Dim_iter p = array->dim_begin();
 	int start = array->dimension_start(p, true);
 	int stride = array->dimension_stride(p, true);
@@ -147,7 +132,6 @@ bool GDALGrid::read()
 	nBufXSize = (stop_2 - start_2) / stride_2 + 1;
 	nBufYSize = (stop - start) / stride + 1;
 
-#if 0
 	/* -------------------------------------------------------------------- */
 	/*      Allocate buffer.                                                */
 	/* -------------------------------------------------------------------- */
@@ -164,7 +148,6 @@ bool GDALGrid::read()
 
 	array->val2buf(&pData[0]);
 	array->set_read_p(true);
-#endif
 
 	/* -------------------------------------------------------------------- */
 	/*      Read or default the geotransform used to generate the           */
@@ -223,7 +206,6 @@ bool GDALGrid::read()
 	array->set_read_p(true);
 
 	set_read_p(true);
-#endif
 
 	return true;
 }
