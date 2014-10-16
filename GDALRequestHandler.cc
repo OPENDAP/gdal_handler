@@ -270,10 +270,10 @@ bool GDALRequestHandler::gdal_build_dmr(BESDataHandlerInterface &dhi)
 	D4BaseTypeFactory d4_factory;
 	dmr->set_factory(&d4_factory);
 	dmr->build_using_dds(dds);
-	dmr->set_factory(0);
 
 	GDALDMR *gdal_dmr = new GDALDMR(dmr);
 	gdal_dmr->setGDALDataset(hDS);
+	gdal_dmr->set_factory(0);
 
 	delete dmr;	// The call below will make 'dmr' unreachable; delete it now to avoid a leak.
 	bes_dmr.set_dmr(gdal_dmr); // BESDMRResponse will delete gdal_dmr
