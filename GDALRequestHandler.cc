@@ -267,8 +267,10 @@ bool GDALRequestHandler::gdal_build_dmr(BESDataHandlerInterface &dhi)
 	// the BES runs the DMR's destructor.
 
 	DMR *dmr = bes_dmr.get_dmr();
-	dmr->set_factory(new D4BaseTypeFactory);
+	D4BaseTypeFactory d4_factory;
+	dmr->set_factory(&d4_factory);
 	dmr->build_using_dds(dds);
+	dmr->set_factory(0);
 
 	GDALDMR *gdal_dmr = new GDALDMR(dmr);
 	gdal_dmr->setGDALDataset(hDS);
