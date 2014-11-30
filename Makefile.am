@@ -8,6 +8,14 @@ AUTOMAKE_OPTIONS = foreign check-news
 
 ACLOCAL_AMFLAGS = -I conf
 
+if DAP_MODULES
+AM_CPPFLAGS = $(GDAL_CFLAGS) -I$(top_srcdir)/dispatch -I$(top_srcdir)/dap $(DAP_CFLAGS)
+LIBADD = $(DAP_SERVER_LIBS) $(DAP_CLIENT_LIBS)
+else
+AM_CPPFLAGS = $(BES_CPPFLAGS) # or wahtever was set here or in ..._CPPFLAGS
+LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
+endif
+
 AM_CXXFLAGS = 
 if COMPILER_IS_GCC
 AM_CXXFLAGS += -Wall -W -Wcast-align
@@ -35,9 +43,9 @@ GDALTypes.cc gdal_das.cc gdal_dds.cc
 GDAL_HDRS = GDALModule.h GDALRequestHandler.h GDALTypes.h GDAL_DDS.h
 
 libgdal_module_la_SOURCES = $(GDAL_SRCS) $(GDAL_HDRS)
-libgdal_module_la_CPPFLAGS = $(GDAL_CFLAGS) $(BES_CPPFLAGS) $(DAP_CFLAGS) 
+# libgdal_module_la_CPPFLAGS = $(GDAL_CFLAGS) $(BES_CPPFLAGS) $(DAP_CFLAGS) 
 libgdal_module_la_LDFLAGS = -avoid-version -module $(GDAL_LDFLAGS)
-libgdal_module_la_LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
+libgdal_module_la_LIBADD = $(LIBADD)
 
 EXTRA_PROGRAMS = 
 
@@ -71,7 +79,7 @@ install-data-local: gdal.conf
 uninstall-local:
 	rm -f $(DESTDIR)$(sysconfdir)/bes/modules/gdal.conf
 
-gdal.conf: gdal.conf.in config.status
+gdal.conf: gdal.conf.in $(top_srcdir)/config.status
 	sed -e "s%[@]bes_modules_dir[@]%${lib_besdir}%" $< > gdal.conf
 
 # Not nearly as clean as it could be, but this removes .svn directories
