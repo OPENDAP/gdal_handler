@@ -6,14 +6,14 @@ License:         LGPLv2+
 Group:           System Environment/Daemons 
 Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
-Requires:        libdap >= 3.11.0
-Requires:        bes >= 3.11.0
-Requires:        gdal >= 1.8
+Requires:        libdap >= 3.11.3
+Requires:        bes >= 3.11.2
+Requires:        gdal >= 1.7.3
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:   libdap-devel >= 3.13.0
-BuildRequires:   bes-devel >= 3.13.0
-BuildRequires:   gdal-devel >= 1.10
+BuildRequires:   libdap-devel >= 3.13.3
+BuildRequires:   bes-devel >= 3.13.2
+BuildRequires:   gdal-devel >= 1.7.3
 
 %description
 This is the GDAL handler for our data server. We hope it will serve any

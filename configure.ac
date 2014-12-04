@@ -1,4 +1,4 @@
-# -*- Autoconf -*-
+ -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 # Configure script for OPeNDAP NCML data handler
 
@@ -88,7 +88,7 @@ fi
 
 if test -z "$GDAL_FOUND"
 then
-    AX_LIB_GDAL([1.10])
+    AX_LIB_GDAL([1.7.3])
     if test ! -z "$GDAL_CFLAGS" -a ! -z "$GDAL_LDFLAGS"; then
         GDAL_FOUND="yes"
     fi
