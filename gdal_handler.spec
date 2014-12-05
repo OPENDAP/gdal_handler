@@ -1,7 +1,7 @@
 Summary:         GDAL handler for the OPeNDAP Data server
 Name:            gdal_handler
 Version:         0.9.4
-Release:         1
+Release:         2
 License:         LGPLv2+
 Group:           System Environment/Daemons 
 Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
