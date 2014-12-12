@@ -123,6 +123,13 @@ AM_CONDITIONAL([BUILD_HYRAX_DEBUG], [test "x$build_hyrax_debug" = "xtrue"])
 
 dnl OPENDAP_DEBUG_OPTION
 
+## This sets up the special symbols used to build the bes.conf file for
+## the tests. Previously, this was done in the Makefile.am down in the
+## test directory, but building the bes.conf here works better with
+## autoconf overall and esp. with the 'modules' build. jhrg 11/19/14
+modulesdir=$BES_MODULE_DIR
+AC_SUBST(modulesdir)
+
 # When we have tests, add these: tests/Makefile tests/atlocal
 AC_CONFIG_FILES([Makefile tests/Makefile tests/atlocal tests/package.m4])
 
