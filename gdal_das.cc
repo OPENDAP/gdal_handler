@@ -121,7 +121,7 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
             "Westernmost_Northing", "Float64", 
             CPLSPrintf( "%.16g", dfMinX ) );
         
-        sprintf( szGeoTransform, "%.16g %.16g %.16g %.16g %.16g %.16g", 
+        snprintf( szGeoTransform, 200, "%.16g %.16g %.16g %.16g %.16g %.16g",
                  adfGeoTransform[0],
                  adfGeoTransform[1],
                  adfGeoTransform[2],
@@ -161,7 +161,7 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
 /* -------------------------------------------------------------------- */
 /*      Create container named after the band.                          */
 /* -------------------------------------------------------------------- */
-        sprintf( szName, "band_%d", iBand+1 );
+        snprintf( szName, 128, "band_%d", iBand+1 );
         band_attr = das.add_table( string(szName), new AttrTable );
 
 /* -------------------------------------------------------------------- */
@@ -174,7 +174,7 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
         dfValue = GDALGetRasterOffset( hBand, &bSuccess );
         if( bSuccess )
         {
-            sprintf( szValue, "%.16g", dfValue );
+            snprintf( szValue, 128, "%.16g", dfValue );
             band_attr->append_attr( "add_offset", "Float64", szValue );
         }
         
@@ -184,7 +184,7 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
         dfValue = GDALGetRasterScale( hBand, &bSuccess );
         if( bSuccess )
         {
-            sprintf( szValue, "%.16g", dfValue );
+            snprintf( szValue, 128, "%.16g", dfValue );
             band_attr->append_attr( "scale_factor", "Float64", szValue );
         }
 
@@ -194,7 +194,7 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
         dfValue = GDALGetRasterNoDataValue( hBand, &bSuccess );
         if( bSuccess )
         {
-            sprintf( szValue, "%.16g", dfValue );
+            snprintf( szValue, 128, "%.16g", dfValue );
             band_attr->append_attr( "missing_value", "Float64", szValue );
         }
 
@@ -308,17 +308,18 @@ static void attach_str_attr_item( AttrTable *parent_table,
                                   const char *pszKey, const char *pszValue )
 
 {
-    string oQuotedValue;
+    //string oQuotedValue;
     char *pszEscapedText = CPLEscapeString( pszValue, -1, 
                                             CPLES_BackslashQuotable );
-
+#if 0
     oQuotedValue = "\"";
     oQuotedValue += pszEscapedText;
     oQuotedValue += "\"";
+#endif
+
+    parent_table->append_attr( pszKey, "String", pszEscapedText /*oQuotedValue*/ );
 
     CPLFree( pszEscapedText );
-        
-    parent_table->append_attr( pszKey, "String", oQuotedValue );
 }
 
 // $Log: gdal_das.cc,v $
