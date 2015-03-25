@@ -47,6 +47,8 @@ atlocal
 
 ## gdal_handler specific files
 
+gdal.conf
+
 tests/testsuite
 tests/bes.conf
 tests/generate_metadata_baseline.sh
