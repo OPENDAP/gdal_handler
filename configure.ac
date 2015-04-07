@@ -4,7 +4,7 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT(gdal_handler, 0.9.4, support@opendap.org)
+AC_INIT(gdal_handler, 1.0.0, support@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_MACRO_DIR([conf])
 

@@ -1,3 +1,92 @@
+2015-03-25  James Gallagher  <jgallagher@opendap.org>
+
+	Accommodate autoconf 2.63
+	Changed the AT_ARG_OPTION_ARG macro so that it uses _ instead of - for
+	the word separator in multi-word options.
+
+2015-03-19  James Gallagher  <jgallagher@opendap.org>
+
+	Fix for	distclean and the modules build.
+
+2015-01-16  James Gallagher  <jgallagher@opendap.org>
+
+	Removed dist-hook which as a hack for SVN
+
+2015-01-14  James Gallagher  <jgallagher@opendap.org>
+
+	Fixed bad gdal_das.cc after dap4 branch merge
+	The file 'lost' some fixes: sprint --> snprint was lost as
+	was a fix to remove double quotes from String attribute values.
+
+	Merged with dap4 branch
+	This merge did not go smoothly and I'm still not sure why. Serveral
+	of the files (GDALArray.cc, gdal_dds.cc, gdal_das.cc) had large
+	parts that were not merged at all. I copied them by hand from the
+	dap4 branch and verified that they worked. This fixes issues with
+	tests as well as larger issues with dap4 compatibility.
+
+2014-12-12  James Gallagher  <jgallagher@opendap.org>
+
+	Fixed Makefile.am and configure.ac after merging with the modules branch
+
+	Merge remote-tracking branch 'origin/modules'
+
+2014-12-07  James Gallagher  <jgallagher@opendap.org>
+
+	Added module name and version info to Makefile.am
+	This change was made to support the modules build where the autoconf
+	symbols PACKAGE_NAME and _MODULE are defined by the bes configure
+	script. This meant that the version response from the bes was useless
+	since it listed every module as 'bes' and gave the bes' version
+	number.
+
+2014-12-04  James Gallagher  <jgallagher@opendap.org>
+
+	Updated	the spec file to release 2.
+
+	Bumped up the libdap and bes versions in the spec file
+
+2014-11-29  James Gallagher  <jgallagher@opendap.org>
+
+	Added gdal_handler to the bes modules build.
+
+2014-08-26  James Gallagher  <jgallagher@opendap.org>
+
+	Reverted the DAP4 changes that were checked in on the trunk by mistake
+	M    GDALArray.cc
+	M    GDALGrid.cc
+	M    GDALModule.cc
+	M    GDALRequestHandler.cc
+	M    GDALRequestHandler.h
+	M    GDALTypes.h
+	M    GDAL_DDS.h
+	D    GDAL_DMR.h
+	M    Makefile.am
+	M    gdal_das.cc
+	M    gdal_dds.cc
+	M    tests/gdal/cea.tif.0.bescmd.baseline
+	M    tests/gdal/cea.tif.2.bescmd.baseline
+	D    tests/gdal/cea.tif.3_ce_1.bescmd
+	D    tests/gdal/cea.tif.3_ce_1.bescmd.baseline
+	D    tests/gdal/cea.tif.dap.bescmd
+	D    tests/gdal/cea.tif.dap.bescmd.baseline
+	D    tests/gdal/cea.tif.dap_ce_1.bescmd
+	D    tests/gdal/cea.tif.dap_ce_1.bescmd.baseline
+	D    tests/gdal/cea.tif.dap_ce_2.bescmd
+	D    tests/gdal/cea.tif.dap_ce_2.bescmd.baseline
+	D    tests/gdal/cea.tif.dap_ce_3.bescmd
+	D    tests/gdal/cea.tif.dap_ce_3.bescmd.baseline
+	D    tests/gdal/cea.tif.dap_ce_4.bescmd
+	D    tests/gdal/cea.tif.dap_ce_4.bescmd.baseline
+	D    tests/gdal/cea.tif.dmr.bescmd
+	D    tests/gdal/cea.tif.dmr.bescmd.baseline
+	M    tests/testsuite.at
+
+	First version that supports DAP4. A bit of a hack...
+
+2014-04-23  Nathan Potter  <ndp@opendap.org>
+
+	gdal_handler: Checking software version update and associated release changes.
 2013-11-15  James Gallagher <jgallagher@opendap.org>
 
 	Updated the pec file to use the current name of the gdal package in the
@@ -7,7 +96,9 @@
 
 2013-10-11  James Gallagher <jgallagher@opendap.org>
 
-	Edits to match the new, sane, semantics for BaseType::read(). True now means done/eof and flase means more data to read (more instances for a sequence). All the tests pass.
+	Edits to match the new, sane, semantics for BaseType::read(). True
+	now means done/eof and flase means more data to read (more
+	instances for a sequence). All the tests pass.
 
 2013-10-01  James Gallagher <jgallagher@opendap.org>
 
@@ -23,7 +114,9 @@
 
 2013-09-26  James Gallagher <jgallagher@opendap.org>
 
-	removed -fno-defer-pop from all copies of Makefile.am since the new OSX compiler prints warnings about it and it seems to not make a difference with newer g++ versions.
+	removed -fno-defer-pop from all copies of Makefile.am since the
+	new OSX compiler prints warnings about it and it seems to not make
+	a difference with newer g++ versions.
 
 2013-09-10  Nathan Potter <ndp@opendap.org>
 
@@ -40,9 +133,6 @@
 	M    fileout_gdal/fileout_gdal.spec
 	M    gdal_handler/gdal_handler.spec
 
-;; Local Variables:
-;; coding: utf-8
-;; End:
 2013-08-29  James Gallagher <jgallagher@opendap.org>
 
 	RPM fixes
