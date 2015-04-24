@@ -54,7 +54,11 @@ libgdal_module_la_LIBADD = $(LIBADD)
 
 EXTRA_PROGRAMS = 
 
-EXTRA_DIST = COPYING gdal.conf.in gdal_handler.spec data OSX_Resources
+EXTRA_DIST = COPYING gdal.conf.in data OSX_Resources
+
+if !DAP_MODULES
+EXTRA_DIST += gdal_handler.spec
+endif
 
 CLEANFILES = *~ gdal.conf
 
