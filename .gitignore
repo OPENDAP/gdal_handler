@@ -50,6 +50,7 @@ atlocal
 gdal.conf
 
 tests/testsuite
+tests/testsuite.dir
 tests/bes.conf
 tests/generate_metadata_baseline.sh
 tests/generate_data_baseline.sh
