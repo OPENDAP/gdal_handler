@@ -2,23 +2,21 @@ AUTOMAKE_OPTIONS = foreign
 
 TESTSUITE = $(srcdir)/testsuite
 
-EXTRA_DIST = $(TESTSUITE).at $(TESTSUITE) package.m4 \
+EXTRA_DIST = $(TESTSUITE).at $(TESTSUITE) $(srcdir)/package.m4		\
 atlocal.in template.bescmd.in bes.conf.in bes.conf.modules.in gdal
 
 noinst_DATA = bes.conf
-DISTCLEANFILES = bes.conf
+
+CLEANFILES = $(TESTSUITE) $(srcdir)/package.m4
+
+DISTCLEANFILES = bes.conf atconfig
 
 check-local: atconfig atlocal $(TESTSUITE)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
-	-rm $(srcdir)/package.m4
-	
-distclean-local:
-	-rm atconfig
-	-rm bes.conf
-	
+
 if DAP_MODULES
 BES_CONF_IN = bes.conf.modules.in
 else
@@ -51,4 +49,3 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])' && \
 	echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
 	} >'$(srcdir)/package.m4'
-
