@@ -10,7 +10,7 @@ ACLOCAL_AMFLAGS = -I conf
 
 # Set the module version here, in the spec file and in configure.ac
 M_NAME=gdal_handler
-M_VER=1.0.0
+M_VER=1.0.1
 
 if DAP_MODULES
 AM_CPPFLAGS = $(GDAL_CFLAGS) -I$(top_srcdir)/dispatch -I$(top_srcdir)/dap $(DAP_CFLAGS)
@@ -20,7 +20,7 @@ AM_CPPFLAGS = $(BES_CPPFLAGS) $(DAP_CFLAGS) $(GDAL_CFLAGS)
 LIBADD = $(BES_DAP_LIBS) $(DAP_LIBS)
 endif
 
-AM_CPPFLAGS += -DMODULE_NAME=\"$(M_NAME)\" -DMODULE_VERSION=\"$(M_VER)\"
+AM_CPPFLAGS += -DMODULE_NAME=\"$(M_NAME)\" -DMODULE_VERSION=\"$(M_VER=1.0.1
 
 AM_CXXFLAGS = 
 if COMPILER_IS_GCC
