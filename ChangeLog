@@ -1,3 +1,29 @@
+2015-09-11  James Gallagher  <jgallagher@opendap.org>
+
+	Modified Makefile.am to support distcheck
+
+2015-08-04  James Gallagher  <jgallagher@opendap.org>
+
+	Fixed package.m4 in the autoconf dirs Makefile.am files
+
+2015-07-14  James Gallagher  <jgallagher@opendap.org>
+
+	package.m4 fixes
+	Removed package.m4.in and added a Makefile target to build package.m4
+
+2015-05-14  James Gallagher  <jgallagher@opendap.org>
+
+	Added to gitignore
+
+2015-04-09  James Gallagher  <jgallagher@opendap.org>
+
+	Merge branch 'master' of https://github.com/opendap/gdal_handler
+
+	Modified Makefile.am to support bes distcheck
+
+2015-04-06  James Gallagher  <jgallagher@opendap.org>
+
+	Version 1.0.0
 2015-03-25  James Gallagher  <jgallagher@opendap.org>
 
 	Accommodate autoconf 2.63
