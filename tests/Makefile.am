@@ -7,15 +7,17 @@ atlocal.in template.bescmd.in bes.conf.in bes.conf.modules.in gdal
 
 noinst_DATA = bes.conf
 
-CLEANFILES = $(TESTSUITE) $(srcdir)/package.m4
+CLEANFILES = bes.conf
 
-DISTCLEANFILES = bes.conf atconfig
+DISTCLEANFILES = atconfig generate_data_baselines.sh \
+generate_metadata_baselines.sh
 
 check-local: atconfig atlocal $(TESTSUITE)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
+	-rm -f $(TESTSUITE) $(srcdir)/package.m4 
 
 if DAP_MODULES
 BES_CONF_IN = bes.conf.modules.in
