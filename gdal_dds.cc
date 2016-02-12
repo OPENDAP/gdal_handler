@@ -147,7 +147,7 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
         ar->append_dim( GDALGetRasterYSize( hDS ), "northing" );
         ar->append_dim( GDALGetRasterXSize( hDS ), "easting" );
 
-        grid->add_var_nocopy( ar, array );
+        grid->add_var_nocopy( ar, libdap::array );
 
 /* -------------------------------------------------------------------- */
 /*      Add the dimension map arrays.                                   */
