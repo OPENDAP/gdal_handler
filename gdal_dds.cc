@@ -197,21 +197,39 @@ void read_data_array(GDALArray *array, GDALRasterBandH hBand, GDALDataType eBufT
 	int stride = array->dimension_stride(p, true);
 	int stop = array->dimension_stop(p, true);
 
+    // Test for the case where a dimension has not been subset. jhrg 2/18/16
+    if (array->dimension_size(p, true) == 0) { //default rows
+        start = 0;
+        stride = 1;
+        stop = GDALGetRasterBandYSize(hBand) - 1;
+    }
+
 	p++;
 	int start_2 = array->dimension_start(p, true);
 	int stride_2 = array->dimension_stride(p, true);
 	int stop_2 = array->dimension_stop(p, true);
 
-	if (start + stop + stride == 0) { //default rows
-		start = 0;
-		stride = 1;
-		stop = GDALGetRasterBandYSize(hBand) - 1;
-	}
-	if (start_2 + stop_2 + stride_2 == 0) { //default columns
-		start_2 = 0;
-		stride_2 = 1;
-		stop_2 = GDALGetRasterBandXSize(hBand) - 1;
-	}
+	if (array->dimension_size(p, true) == 0) { //default columns
+        start_2 = 0;
+        stride_2 = 1;
+        stop_2 = GDALGetRasterBandXSize(hBand) - 1;
+    }
+
+#if 0
+	// Removed this because it is based on a false assumption - there are plenty of ways
+	// start, stop and stride could add up to zero (since all are signed). See above for
+	// the fix. jhrg 2/18/16
+    if (start + stop + stride == 0) { //default rows
+        start = 0;
+        stride = 1;
+        stop = GDALGetRasterBandYSize(hBand) - 1;
+    }
+    if (start_2 + stop_2 + stride_2 == 0) { //default columns
+        start_2 = 0;
+        stride_2 = 1;
+        stop_2 = GDALGetRasterBandXSize(hBand) - 1;
+    }
+#endif
 
 	/* -------------------------------------------------------------------- */
 	/*      Build a window and buf size from this.                          */
