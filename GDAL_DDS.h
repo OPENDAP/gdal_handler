@@ -26,7 +26,7 @@
 
 #include <gdal.h>
 
-#include <DataDDS.h>
+#include <DDS.h>
 #include <InternalErr.h>
 
 using namespace libdap;
@@ -46,17 +46,17 @@ using namespace libdap;
  * strictly needed, but it would make both the DDS and DataDDS responses
  * work the same way.
  */
-class GDALDDS : public DataDDS {
+class GDALDDS : public DDS {
 private:
     GDALDatasetH d_hDS;
 
     void m_duplicate(const GDALDDS &src) { d_hDS = src.d_hDS; }
 
 public:
-    GDALDDS(DataDDS *ddsIn) : DataDDS(*ddsIn), d_hDS(0) {}
-    GDALDDS(BaseTypeFactory *factory, const string &name) : DataDDS(factory, name), d_hDS(0) {}
+    GDALDDS(DDS *ddsIn) : DDS(*ddsIn), d_hDS(0) {}
+    GDALDDS(BaseTypeFactory *factory, const string &name) : DDS(factory, name), d_hDS(0) {}
 
-    GDALDDS(const GDALDDS &rhs) : DataDDS(rhs) {
+    GDALDDS(const GDALDDS &rhs) : DDS(rhs) {
         m_duplicate(rhs);
     }
 
