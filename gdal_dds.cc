@@ -38,7 +38,7 @@
 
 using namespace libdap;
 
-extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
+// extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
 
 /************************************************************************/
 /*                          read_descriptors()                          */
