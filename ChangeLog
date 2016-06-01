@@ -1,3 +1,22 @@
+2016-05-26  James Gallagher  <jgallagher@opendap.org>
+
+	Removed an unneed extern decl
+
+2016-05-10  James Gallagher  <jgallagher@opendap.org>
+
+	The gdal_dds code checked for dimension subsets in a broken way; fixed.
+
+2016-02-12  James Gallagher  <jgallagher@opendap.org>
+
+	Patch for gcc-6 from Orion Poplawski
+
+2016-01-26  James Gallagher  <jgallagher@opendap.org>
+
+	Updated ChangeLog, etc., for the bes 3.17 release
+
+2015-10-27  James Gallagher  <jgallagher@opendap.org>
+
+	Update for bes 3.16.0 release
 2015-10-27  James Gallagher  <jgallagher@opendap.org>
 
 	Update for bes 3.16.0 release
