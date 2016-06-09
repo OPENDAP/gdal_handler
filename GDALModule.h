@@ -24,21 +24,24 @@
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
-
 #ifndef A_GDALModule_H
 #define A_GDALModule_H 1
 
 #include <BESAbstractModule.h>
 
-class GDALModule : public BESAbstractModule {
-   public:
-    GDALModule() {}
-    virtual	~GDALModule() {}
-    virtual void initialize( const string &modname ) ;
-    virtual void terminate( const string &modname ) ;
+class GDALModule: public BESAbstractModule {
+public:
+    GDALModule()
+    {
+    }
+    virtual ~GDALModule()
+    {
+    }
+    virtual void initialize(const string &modname);
+    virtual void terminate(const string &modname);
 
-    virtual void dump( ostream &strm ) const ;
-} ;
+    virtual void dump(ostream &strm) const;
+};
 
 #endif // A_GDALModule_H
 

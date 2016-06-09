@@ -68,15 +68,9 @@
 #define GDAL_NAME "gdal"
 
 using namespace libdap;
-#if 0
-bool GDALRequestHandler::_show_shared_dims = false;
-bool GDALRequestHandler::_show_shared_dims_set = false;
-bool GDALRequestHandler::_ignore_unknown_types = false;
-bool GDALRequestHandler::_ignore_unknown_types_set = false;
-#endif
 
-extern void gdal_read_dataset_attributes(DAS & das, const string & filename);
-extern GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string & filename);
+extern void gdal_read_dataset_attributes(DAS & das, GDALDatasetH &hDS/*const string & filename*/);
+extern void /*GDALDatasetH*/ gdal_read_dataset_variables(DDS *dds, GDALDatasetH &hDS, const string &filename);
 
 GDALRequestHandler::GDALRequestHandler(const string &name) :
     BESRequestHandler(name)
@@ -91,58 +85,7 @@ GDALRequestHandler::GDALRequestHandler(const string &name) :
     add_handler(HELP_RESPONSE, GDALRequestHandler::gdal_build_help);
     add_handler(VERS_RESPONSE, GDALRequestHandler::gdal_build_version);
 
-#if 0
-    // See comments in the header about these... jhrg
-    if (GDALRequestHandler::_show_shared_dims_set == false) {
-        bool key_found = false, context_found = false;
-        // string key = "GDAL.ShowSharedDimensions";
-        string doset;
-        TheBESKeys::TheKeys()->get_value("GDAL.ShowSharedDimensions", doset, key_found);
-        // TODO Fix this so it works
-        string context_value = BESContextManager::TheManager()->get_context("xdap_accept", context_found);
-        //cerr << "context value: " << context_value << endl;
-        //cerr << "Testing values..." << endl;
-        if (key_found) {
-            //cerr << " Key found" << endl;
-            doset = BESUtil::lowercase(doset);
-            if (doset == "true" || doset == "yes") {
-                GDALRequestHandler::_show_shared_dims = true;
-            }
-        }
-        else if (context_found) {
-            //cerr << "context found" << endl;
-            if (version_ge(context_value, 3.2))
-                GDALRequestHandler::_show_shared_dims = false;
-            else
-                GDALRequestHandler::_show_shared_dims = true;
-        }
-        else {
-            //cerr << "Set default value" << endl;
-            GDALRequestHandler::_show_shared_dims = true;
-        }
-
-        GDALRequestHandler::_show_shared_dims_set = true;
-    }
-
-    if (GDALRequestHandler::_ignore_unknown_types_set == false) {
-        bool key_found = false;
-        string doset;
-        TheBESKeys::TheKeys()->get_value("GDAL.IgnoreUnknownTypes", doset, key_found);
-        if (key_found) {
-            doset = BESUtil::lowercase(doset);
-            if (doset == "true" || doset == "yes")
-                GDALRequestHandler::_ignore_unknown_types = true;
-            else
-                GDALRequestHandler::_ignore_unknown_types = false;
-        }
-        else {
-            // if the key is not found, set the default value
-            GDALRequestHandler::_ignore_unknown_types = false;
-        }
-
-        GDALRequestHandler::_ignore_unknown_types_set = true;
-    }
-#endif
+    GDALAllRegister();
 }
 
 GDALRequestHandler::~GDALRequestHandler()
@@ -158,9 +101,19 @@ bool GDALRequestHandler::gdal_build_das(BESDataHandlerInterface & dhi)
     try {
         bdas->set_container(dhi.container->get_symbolic_name());
         DAS *das = bdas->get_das();
-        string accessed = dhi.container->access();
-        gdal_read_dataset_attributes(*das, accessed);
-        Ancillary::read_ancillary_das(*das, accessed);
+        string filename = dhi.container->access();
+
+        GDALDatasetH hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+
+        if (hDS == NULL)
+            throw Error(string(CPLGetLastErrorMsg()));
+
+        gdal_read_dataset_attributes(*das, hDS);
+
+        GDALClose(hDS);
+
+        Ancillary::read_ancillary_das(*das, filename);
+
         bdas->clear_container();
     }
     catch (BESError &e) {
@@ -196,15 +149,20 @@ bool GDALRequestHandler::gdal_build_dds(BESDataHandlerInterface & dhi)
         dds->filename(filename);
         dds->set_dataset_name(filename.substr(filename.find_last_of('/') + 1));
 
-        // Here the handler does not need the open dataset handle, so
-        // it closes it right away.
-        GDALDatasetH hDS = gdal_read_dataset_variables(dds, filename);
-        GDALClose(hDS);
+        GDALDatasetH hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+
+        if (hDS == NULL)
+            throw Error(string(CPLGetLastErrorMsg()));
+
+        gdal_read_dataset_variables(dds, hDS, filename);
 
         DAS *das = new DAS;
         BESDASResponse bdas(das);
         bdas.set_container(dhi.container->get_symbolic_name());
-        gdal_read_dataset_attributes(*das, filename);
+        gdal_read_dataset_attributes(*das, hDS);
+
+        GDALClose(hDS);
+
         Ancillary::read_ancillary_das(*das, filename);
 
         dds->transfer_attributes(das);
@@ -256,16 +214,23 @@ bool GDALRequestHandler::gdal_build_data(BESDataHandlerInterface & dhi)
         gdds->filename(filename);
         gdds->set_dataset_name(filename.substr(filename.find_last_of('/') + 1));
 
+        GDALDatasetH hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+
+        if (hDS == NULL)
+            throw Error(string(CPLGetLastErrorMsg()));
+
         // Save the dataset handle so that it can be closed later
         // when the BES is done with the DDS (which is really a GDALDDS,
         // spawn of DataDDS...)
-        GDALDatasetH hDS = gdal_read_dataset_variables(gdds, filename);
+        gdal_read_dataset_variables(gdds, hDS, filename);
         gdds->setGDALDataset(hDS);
 
         DAS *das = new DAS;
         BESDASResponse bdas(das);
         bdas.set_container(dhi.container->get_symbolic_name());
-        gdal_read_dataset_attributes(*das, filename);
+        gdal_read_dataset_attributes(*das, hDS);
+
+        // Don't close the data set; leave the handle (hDS) open so the data can be read
         Ancillary::read_ancillary_das(*das, filename);
 
         gdds->transfer_attributes(das);
@@ -294,20 +259,24 @@ bool GDALRequestHandler::gdal_build_dmr(BESDataHandlerInterface &dhi)
 	// Because this code does not yet know how to build a DMR directly, use
 	// the DMR ctor that builds a DMR using a 'full DDS' (a DDS with attributes).
 	// First step, build the 'full DDS'
-	string data_path = dhi.container->access();
+	string filename = dhi.container->access();
 
 	BaseTypeFactory factory;
-	DDS dds(&factory, name_path(data_path), "3.2");
-	dds.filename(data_path);
+	DDS dds(&factory, name_path(filename), "3.2");
+	dds.filename(filename);
 
-	GDALDatasetH hDS = 0;	// Set in the following block but needed later.
+    GDALDatasetH hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
+
+    if (hDS == NULL)
+        throw Error(string(CPLGetLastErrorMsg()));
 
 	try {
-		hDS = gdal_read_dataset_variables(&dds, data_path);
+		gdal_read_dataset_variables(&dds, hDS, filename);
 
 		DAS das;
-		gdal_read_dataset_attributes(das, data_path);
-		Ancillary::read_ancillary_das(das, data_path);
+		gdal_read_dataset_attributes(das, hDS);
+
+		Ancillary::read_ancillary_das(das, filename);
 		dds.transfer_attributes(&das);
 	}
 	catch (InternalErr &e) {
@@ -363,10 +332,6 @@ bool GDALRequestHandler::gdal_build_help(BESDataHandlerInterface & dhi)
     map < string, string > attrs;
     attrs["name"] = MODULE_NAME ;
     attrs["version"] = MODULE_VERSION ;
-#if 0
-    attrs["name"] = PACKAGE_NAME;
-    attrs["version"] = PACKAGE_VERSION;
-#endif
     list < string > services;
     BESServiceRegistry::TheRegistry()->services_handled(GDAL_NAME, services);
     if (services.size() > 0) {
@@ -386,9 +351,6 @@ bool GDALRequestHandler::gdal_build_version(BESDataHandlerInterface & dhi)
     if (!info)
         throw BESInternalError("cast error", __FILE__, __LINE__);
 
-#if 0
-    info->add_module(PACKAGE_NAME, PACKAGE_VERSION);
-#endif
     info->add_module(MODULE_NAME, MODULE_VERSION);
 
     return true;

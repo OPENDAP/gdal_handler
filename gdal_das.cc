@@ -40,20 +40,8 @@ static void attach_str_attr_item( AttrTable *parent_table,
 /*                           read_variables()                           */
 /************************************************************************/
 
-void gdal_read_dataset_attributes( DAS &das, const string &filename)
+void gdal_read_dataset_attributes( DAS &das, GDALDatasetH &hDS)
 {
-/* -------------------------------------------------------------------- */
-/*      Open the dataset.                                               */
-/* -------------------------------------------------------------------- */
-    GDALDatasetH hDS;
-
-    GDALAllRegister();
-
-    hDS = GDALOpen( filename.c_str(), GA_ReadOnly );
-
-    if( hDS == NULL )
-        throw Error(string(CPLGetLastErrorMsg()));
-
 /* -------------------------------------------------------------------- */
 /*      Create the dataset container.                                   */
 /* -------------------------------------------------------------------- */
@@ -130,8 +118,6 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
                  adfGeoTransform[5] );
 
         attach_str_attr_item( attr_table, "GeoTransform", szGeoTransform );
-
-        
     }
 
 /* -------------------------------------------------------------------- */
@@ -261,12 +247,6 @@ void gdal_read_dataset_attributes( DAS &das, const string &filename)
             }
         }
     }
-
-/* -------------------------------------------------------------------- */
-/*      Close the dataset.                                               */
-/* -------------------------------------------------------------------- */
-    GDALClose(hDS);
-
 }
 
 /************************************************************************/
@@ -311,11 +291,6 @@ static void attach_str_attr_item( AttrTable *parent_table,
     //string oQuotedValue;
     char *pszEscapedText = CPLEscapeString( pszValue, -1, 
                                             CPLES_BackslashQuotable );
-#if 0
-    oQuotedValue = "\"";
-    oQuotedValue += pszEscapedText;
-    oQuotedValue += "\"";
-#endif
 
     parent_table->append_attr( pszKey, "String", pszEscapedText /*oQuotedValue*/ );
 
