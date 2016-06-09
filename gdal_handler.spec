@@ -1,18 +1,18 @@
 Summary:         GDAL handler for the OPeNDAP Data server
 Name:            gdal_handler
-Version:         0.9.4
-Release:         2
+Version:         1.0.5
+Release:         1
 License:         LGPLv2+
 Group:           System Environment/Daemons 
 Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
-Requires:        libdap >= 3.11.3
-Requires:        bes >= 3.11.2
+Requires:        libdap >= 3.18.0
+Requires:        bes >= 3.17.1
 Requires:        gdal >= 1.10
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:   libdap-devel >= 3.13.3
-BuildRequires:   bes-devel >= 3.13.2
+BuildRequires:   libdap-devel >= 3.18.0
+BuildRequires:   bes-devel >= 3.17.1
 BuildRequires:   gdal-devel >= 1.10
 
 %description
