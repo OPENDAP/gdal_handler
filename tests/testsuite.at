@@ -1,83 +1,19 @@
 # Process with autom4te to create an -*- Autotest -*- test suite.
 
+m4_include([handler_tests_macros.m4])
 
-# ------------------------------
-#
+AT_BESCMD_RESPONSE_TEST([gdal/cea.tif.0.bescmd], [pass])
+AT_BESCMD_RESPONSE_TEST([gdal/cea.tif.1.bescmd], [pass])
+AT_BESCMD_RESPONSE_TEST([gdal/cea.tif.2.bescmd], [pass])
 
-AT_INIT([bes.conf besstandalone getdap])
-# AT_COPYRIGHT([])
+AT_BESCMD_BINARYDATA_RESPONSE_TEST([gdal/cea.tif.3.bescmd], [pass])
 
-AT_TESTED([besstandalone])
+# These tests use the 'repeat' option of besstandalone to test
+# for the bug reported in Hyrax-220 (and other tickets) where
+# repeat accesses fail after the first response. jhrg 6/9/16
+AT_BESCMD_REPEAT_RESPONSE_TEST([gdal/cea.tif.r0.bescmd], [pass])
+AT_BESCMD_REPEAT_RESPONSE_TEST([gdal/cea.tif.r1.bescmd], [pass])
+AT_BESCMD_REPEAT_RESPONSE_TEST([gdal/cea.tif.r2.bescmd], [pass])
 
-AT_ARG_OPTION_ARG([generate g],
-    [  -g arg, --generate=arg   Build the baseline file for test 'arg'],
-    [if ./generate_metadata_baseline.sh $at_arg_generate; then
-         echo "Built baseline for $at_arg_generate"
-     else
-         echo "Could not generate baseline for $at_arg_generate"
-     fi     
-     exit],[])
-
-AT_ARG_OPTION_ARG([generate_data a],
-    [  -a arg, --generate_data=arg   Build the baseline file for test 'arg'],
-    [if ./generate_data_baseline.sh $at_arg_generate_data; then
-         echo "Built baseline for $at_arg_generate_data"
-     else
-         echo "Could not generate baseline for $at_arg_generate_data"
-     fi     
-     exit],[])
-
-# Pure, temporary hackery... This comes from the csv_handler
-# and could maybe be integrated into the tests if given enough time.
-# jhrg 10/15/14
-#m4_define([VALGRIND],[valgrind --dsymutil=yes --leak-check=yes --error-exitcode=1 --suppressions=$abs_srcdir/osx_10.9_leaks.txt])
-m4_define([VALGRIND],[])
- 
-# Usage: _AT_TEST_*(<bescmd source>, <baseline file>, [pass|xfail])
-
-m4_define([_AT_BESCMD_TEST],   
-[AT_CHECK([VALGRIND besstandalone -c $abs_builddir/bes.conf -i $1 || true], [], [stdout], [stderr])
-AT_CHECK([diff -b -B $2 stdout || diff -b -B $2 stderr], [], [ignore],[],[])
-AT_XFAIL_IF([test "$3" = "xfail"])])
-
-m4_define([AT_BESCMD_DAS_RESPONSE_TEST],
-[AT_SETUP([BESCMD $1])
-AT_KEYWORDS([das])
-_AT_BESCMD_TEST($abs_srcdir/gdal/$1, $abs_srcdir/gdal/$1.baseline, $2)
-AT_CLEANUP]
-])
-
-m4_define([AT_BESCMD_DDS_RESPONSE_TEST],
-[AT_SETUP([BESCMD $1])
-AT_KEYWORDS([dds])
-_AT_BESCMD_TEST($abs_srcdir/gdal/$1, $abs_srcdir/gdal/$1.baseline, $2)
-AT_CLEANUP]
-])
-
-m4_define([AT_BESCMD_DDX_RESPONSE_TEST],
-[AT_SETUP([BESCMD $1])
-AT_KEYWORDS([ddx])
-_AT_BESCMD_TEST($abs_srcdir/gdal/$1, $abs_srcdir/gdal/$1.baseline, $2)
-AT_CLEANUP]
-])
-
-m4_define([AT_BESCMD_BINARYDATA_RESPONSE_TEST],
-[AT_SETUP([BESCMD $1])
-AT_KEYWORDS([data])
-AT_CHECK([VALGRIND besstandalone -c $abs_builddir/bes.conf -i $abs_srcdir/gdal/$1 | getdap -M - || true], [], [stdout], [stderr])
-AT_CHECK([diff -b -B $abs_srcdir/gdal/$1.baseline stdout || diff -b -B $abs_srcdir/gdal/$1.baseline stderr], [], [ignore],[],[])
-AT_XFAIL_IF([test "$3" = "xfail"])
-AT_CLEANUP])
-
-m4_define([AT_BESCMD_DAP4DATA_RESPONSE_TEST],
-[AT_SETUP([BESCMD $1])
-AT_KEYWORDS([data])
-AT_CHECK([VALGRIND besstandalone -c $abs_builddir/bes.conf -i $abs_srcdir/gdal/$1 | getdap4 -D -M - || true], [], [stdout], [stderr])
-AT_CHECK([diff -b -B $abs_srcdir/gdal/$1.baseline stdout || diff -b -B $abs_srcdir/gdal/$1.baseline stderr], [], [ignore],[],[])
-AT_XFAIL_IF([test "$3" = "xfail"])
-AT_CLEANUP])
-
-AT_BESCMD_DAS_RESPONSE_TEST([cea.tif.0.bescmd], [pass])
-AT_BESCMD_DDS_RESPONSE_TEST([cea.tif.1.bescmd], [pass])
-AT_BESCMD_DDX_RESPONSE_TEST([cea.tif.2.bescmd], [pass])
-AT_BESCMD_BINARYDATA_RESPONSE_TEST([cea.tif.3.bescmd], [pass])
+# DAP4 responses
+AT_BESCMD_RESPONSE_TEST([gdal/cea.tif.dmr.bescmd], [pass])
