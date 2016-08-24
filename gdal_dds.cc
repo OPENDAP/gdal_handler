@@ -254,7 +254,6 @@ void read_map_array(Array *map, GDALRasterBandH hBand, string filename)
 	// Grid or maybe in the GDALDDS instance? Then we can avoid a second
 	// open/read operation on the file. jhrg
 	GDALDatasetH hDS;
-	GDALAllRegister(); // even though the calling function called this.
 
 	hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
 
