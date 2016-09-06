@@ -38,29 +38,12 @@
 
 using namespace libdap;
 
-extern void gdal_read_dataset_attributes(DAS &dds, const string &filename);
-
 /************************************************************************/
 /*                          read_descriptors()                          */
 /************************************************************************/
 
-GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
+void gdal_read_dataset_variables(DDS *dds, GDALDatasetH &hDS, const string &filename)
 {
-    GDALDatasetH hDS;
-/* -------------------------------------------------------------------- */
-/*      Open the dataset.                                               */
-/* -------------------------------------------------------------------- */
-
-    // TODO Since this code no longer closes the dataset, it would be
-    // better to move the open operation outside it, to the caller.
-    // jhrg 7/26/12
-    GDALAllRegister();
-    hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
-
-    if (hDS == NULL)
-        throw Error(string(CPLGetLastErrorMsg()));
-
-
 /* -------------------------------------------------------------------- */
 /*      Create the basic matrix for each band.                          */
 /* -------------------------------------------------------------------- */
@@ -71,13 +54,7 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
         DBG(cerr << "In dgal_dds.cc  iBand" << endl);
 
         GDALRasterBandH hBand = GDALGetRasterBand( hDS, iBand+1 );
-#if 0
-        //BaseType *bt;
-        // TODO ostringstream
-        char szName[32];
-        // nsprintf if not ostringstream
-        sprintf( szName, "band_%d", iBand+1 );
-#endif
+
         ostringstream oss;
         oss << "band_" << iBand+1;
 
@@ -138,10 +115,7 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
         Array *ar;
         // A 'feature' of Array is that it copies the variable passed to
         // its ctor. To get around that, pass null and use add_var_nocopy().
-#if 0
-        ar = new GDALArray( oss.str(), 0 );
-#endif
-        // Added for the DAP4 response.
+        // Modified for the DAP4 response; switched to this new ctor.
         ar = new GDALArray( oss.str(), 0, filename, hBand, eBufType );
         ar->add_var_nocopy( bt );
         ar->append_dim( GDALGetRasterYSize( hDS ), "northing" );
@@ -170,8 +144,6 @@ GDALDatasetH gdal_read_dataset_variables(DDS *dds, const string &filename)
 
         dds->add_var_nocopy( grid );
     }
-
-    return hDS;
 }
 
 /**
@@ -197,21 +169,23 @@ void read_data_array(GDALArray *array, GDALRasterBandH hBand, GDALDataType eBufT
 	int stride = array->dimension_stride(p, true);
 	int stop = array->dimension_stop(p, true);
 
+    // Test for the case where a dimension has not been subset. jhrg 2/18/16
+    if (array->dimension_size(p, true) == 0) { //default rows
+        start = 0;
+        stride = 1;
+        stop = GDALGetRasterBandYSize(hBand) - 1;
+    }
+
 	p++;
 	int start_2 = array->dimension_start(p, true);
 	int stride_2 = array->dimension_stride(p, true);
 	int stop_2 = array->dimension_stop(p, true);
 
-	if (start + stop + stride == 0) { //default rows
-		start = 0;
-		stride = 1;
-		stop = GDALGetRasterBandYSize(hBand) - 1;
-	}
-	if (start_2 + stop_2 + stride_2 == 0) { //default columns
-		start_2 = 0;
-		stride_2 = 1;
-		stop_2 = GDALGetRasterBandXSize(hBand) - 1;
-	}
+	if (array->dimension_size(p, true) == 0) { //default columns
+        start_2 = 0;
+        stride_2 = 1;
+        stop_2 = GDALGetRasterBandXSize(hBand) - 1;
+    }
 
 	/* -------------------------------------------------------------------- */
 	/*      Build a window and buf size from this.                          */
@@ -280,7 +254,6 @@ void read_map_array(Array *map, GDALRasterBandH hBand, string filename)
 	// Grid or maybe in the GDALDDS instance? Then we can avoid a second
 	// open/read operation on the file. jhrg
 	GDALDatasetH hDS;
-	GDALAllRegister(); // even though the calling function called this.
 
 	hDS = GDALOpen(filename.c_str(), GA_ReadOnly);
 

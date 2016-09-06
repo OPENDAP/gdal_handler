@@ -1,3 +1,14 @@
+News for version 1.0.5
+
+Fixed the obscure Hyrax-220 ticket - inside teh gdal library, the 
+pthread function pthread_setspecific() was returning an error after
+the first response (whcih always worked). The library was being 
+initialized in an odd way and fixing this fixed the problem.
+
+News for version 1.0.4
+
+Updates since 2015-10-27, see the ChangeLog
+
 News for version 1.0.3
 
 Minor updates, see the ChangeLog

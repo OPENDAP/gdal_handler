@@ -46,35 +46,21 @@ using std::endl;
 void GDALModule::initialize(const string & modname)
 {
     BESDEBUG("gdal", "Initializing GDAL module " << modname << endl);
-    BESDEBUG("gdal", "    adding " << modname << " request handler" << endl);
 
     BESRequestHandler *handler = new GDALRequestHandler(modname);
     BESRequestHandlerList::TheList()->add_handler(modname, handler);
 
-    BESDEBUG("gdal", modname << " handles dap services" << endl);
-
     BESDapService::handle_dap_service(modname);
-
-    BESDEBUG("gdal", "    adding " << GDAL_CATALOG << " catalog" << endl);
 
     if (!BESCatalogList::TheCatalogList()->ref_catalog(GDAL_CATALOG)) {
         BESCatalogList::TheCatalogList()-> add_catalog(new BESCatalogDirectory(GDAL_CATALOG));
     }
-    else {
-        BESDEBUG("gdal", "    catalog already exists, skipping" << endl);
-    }
-
-    BESDEBUG("gdal", "    adding catalog container storage " << GDAL_CATALOG << endl);
 
     if (!BESContainerStorageList::TheList()->ref_persistence(GDAL_CATALOG)) {
         BESContainerStorageCatalog *csc = new BESContainerStorageCatalog(GDAL_CATALOG);
         BESContainerStorageList::TheList()->add_persistence(csc);
     }
-    else {
-        BESDEBUG("gdal", "    storage already exists, skipping" << endl);
-    }
 
-    BESDEBUG("gdal", "    adding gdal debug context" << endl);
     BESDebug::Register("gdal");
 
     BESDEBUG("gdal", "Done Initializing GDAL module " << modname << endl);
@@ -84,15 +70,10 @@ void GDALModule::terminate(const string & modname)
 {
     BESDEBUG("gdal", "Cleaning GDAL module " << modname << endl);
 
-    BESDEBUG("gdal", "    removing GDAL Handler" << modname << endl);
-    BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler(modname);
-    if (rh)
-        delete rh;
+    delete BESRequestHandlerList::TheList()->remove_handler(modname);
 
-    BESDEBUG("gdal", "    removing catalog container storage" << GDAL_CATALOG << endl);
     BESContainerStorageList::TheList()->deref_persistence(GDAL_CATALOG);
 
-    BESDEBUG("gdal", "    removing " << GDAL_CATALOG << " catalog" << endl);
     BESCatalogList::TheCatalogList()->deref_catalog(GDAL_CATALOG);
 
     BESDEBUG("gdal", "Done Cleaning GDAL module " << modname << endl);

@@ -31,6 +31,7 @@
 
 #include "GDALTypes.h"
 
+using namespace std;
 using namespace libdap;
 
 // From gdal_dds.cc

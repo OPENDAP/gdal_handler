@@ -3,7 +3,8 @@ AUTOMAKE_OPTIONS = foreign
 TESTSUITE = $(srcdir)/testsuite
 
 EXTRA_DIST = $(TESTSUITE).at $(TESTSUITE) $(srcdir)/package.m4		\
-atlocal.in template.bescmd.in bes.conf.in bes.conf.modules.in gdal
+atlocal.in template.bescmd.in bes.conf.in bes.conf.modules.in gdal \
+handler_tests_macros.m4
 
 noinst_DATA = bes.conf
 
@@ -17,7 +18,7 @@ check-local: atconfig atlocal $(TESTSUITE)
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
-	-rm -f $(TESTSUITE) $(srcdir)/package.m4 
+	-rm -f $(TESTSUITE)
 
 if DAP_MODULES
 BES_CONF_IN = bes.conf.modules.in
@@ -37,7 +38,7 @@ bes.conf: $(BES_CONF_IN) $(top_srcdir)/configure.ac
 AUTOM4TE = $(SHELL) $(top_srcdir)/conf/missing --run autom4te
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
-$(TESTSUITE): $(srcdir)/package.m4 $(TESTSUITE).at
+$(TESTSUITE): $(srcdir)/package.m4 $(TESTSUITE).at $(srcdir)/handler_tests_macros.m4
 	$(AUTOTEST) -I '$(srcdir)' -o ${srcdir}/$@.tmp $@.at
 	mv ${srcdir}/$@.tmp ${srcdir}/$@
 
