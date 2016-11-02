@@ -1,3 +1,7 @@
+News for version 1.0.6
+
+Updates since 2016-05-26, see the ChangeLog
+
 News for version 1.0.5
 
 Fixed the obscure Hyrax-220 ticket - inside teh gdal library, the 

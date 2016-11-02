@@ -1,3 +1,26 @@
+2016-09-06  James Gallagher  <jgallagher@opendap.org>
+
+	Merge branch 'master' into response_cache
+
+2016-08-24  James Gallagher  <jgallagher@opendap.org>
+
+	Removed unneeded call to GDALAllRegister in the code that reads data for a Grid map.
+
+	Updated the tests so that a pattern is used for the baselines so that differences in the values of the spatial_ref attribute produced by GDAL 2.1 and 1.10 don't make false test fails. These differences are minor (the last for digits of a double value).
+
+2016-06-09  James Gallagher  <jgallagher@opendap.org>
+
+	Tests for the 'repeat accesses fail' bug fix (Hyrax-220)
+
+	Updated the version number and associated files
+
+	Refactor
+
+2016-06-01  James Gallagher  <jgallagher@opendap.org>
+
+	Merge branch 'master' of https://github.com/opendap/gdal_handler
+
+	Hyrax 1.13.1
 2016-05-26  James Gallagher  <jgallagher@opendap.org>
 
 	Removed an unneed extern decl
