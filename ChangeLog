@@ -6,7 +6,10 @@
 
 	Removed unneeded call to GDALAllRegister in the code that reads data for a Grid map.
 
-	Updated the tests so that a pattern is used for the baselines so that differences in the values of the spatial_ref attribute produced by GDAL 2.1 and 1.10 don't make false test fails. These differences are minor (the last for digits of a double value).
+	Updated the tests so that a pattern is used for the baselines so
+	that differences in the values of the spatial_ref attribute
+	produced by GDAL 2.1 and 1.10 don't make false test fails. These
+	differences are minor (the last for digits of a double value).
 
 2016-06-09  James Gallagher  <jgallagher@opendap.org>
 
